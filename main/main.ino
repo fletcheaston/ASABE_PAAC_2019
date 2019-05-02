@@ -4,6 +4,7 @@ const int northPingPin = 13; // Trigger Pin of Ultrasonic Sensor
 const int northEchoPin = 12; // Echo Pin of Ultrasonic Sensor
 const int westPingPin = 11; // Trigger Pin of Ultrasonic Sensor
 const int westEchoPin = 10; // Echo Pin of Ultrasonic Sensor
+const bool readSerial = false;
 
 void setup()
 {
@@ -12,8 +13,26 @@ void setup()
 
 void loop()
 {
-   Serial.println("N:" + String(readNorthRangeFinder()));
-   Serial.println("W:" + String(readWestRangeFinder()));
+  if(readSerial)
+  {
+    char in;
+    if (Serial.available())
+    {
+      in = Serial.read();
+      switch(in)
+      {
+        case 'N': Serial.println(readNorthRangeFinder());
+        case 'W': Serial.println(readWestRangeFinder());
+      }
+      Serial.flush();
+    }
+  }
+  else
+  {
+    //Serial.println(readNorthRangeFinder());
+    Serial.println(readWestRangeFinder());
+  }
+
 }
 
 long readNorthRangeFinder()
