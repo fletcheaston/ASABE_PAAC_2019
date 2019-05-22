@@ -34,9 +34,16 @@
 #include <SoftwareSerial.h>
 #include <Servo.h>
 #include "Adafruit_VL53L0X.h"
+#include <LIDARLite.h>
 
 //#define DEBUG_INFO
 //#define DEBUG_INFO1
+
+#define lidarLeftShutdown 22
+#define lidarRightShutdown 23
+
+LIDARLite lidarLeft;
+LIDARLite lidarRight;
 
 #define tofBackLeftShutDown 30
 #define tofBackRightShutDown 28
@@ -2850,6 +2857,10 @@ void setup()
   BluetoothSource = DATA_SERIAL;
   
   setupTOF();
+
+  setupLidar();
+
+  printI2Cdevices();
 }
 
 /**
@@ -2986,8 +2997,37 @@ void loop()
   {
     line_model();
   }
-  
-  printTofData();
+
+  Serial.println(printTofData() + ":" + printLidarData());
+}
+
+void setupLidar()
+{
+  pinMode(lidarLeftShutdown, OUTPUT);
+  pinMode(lidarRightShutdown, OUTPUT);
+
+  delay(10);
+
+  digitalWrite(lidarLeftShutdown, LOW);
+  digitalWrite(lidarRightShutdown, LOW);
+
+  delay(10);
+
+  digitalWrite(lidarLeftShutdown, HIGH);
+
+  lidarLeft.begin(4, true);
+
+  lidarLeft.setI2Caddr(0x66, 1, 0x62);
+
+  delay(50);
+
+  digitalWrite(lidarRightShutdown, HIGH);
+
+  lidarRight.begin(4, true);
+
+  lidarRight.setI2Caddr(0x64, 1, 0x62);
+
+  delay(50);
 }
 
 void setupTOF()
@@ -3041,8 +3081,12 @@ void setupTOF()
     tofBackRight.begin(0x37);
 
     delay(100);
+    
+}
 
-    // Print available devices over i2c.
+void printI2Cdevices()
+{
+  // Print available devices over i2c.
     byte count = 0;
 
     for (byte i = 1; i < 120; i++)
@@ -3064,17 +3108,27 @@ void setupTOF()
     Serial.print ("Found ");
     Serial.print (count, DEC);
     Serial.println (" device(s).");
-    
 }
 
-void printTofData()
+String printLidarData()
+{
+  String lidarData = "";
+
+  lidarData = lidarData + String(lidarLeft.distance(true, 0x66));
+  lidarData = lidarData + ":";
+  lidarData = lidarData + String(lidarRight.distance(true, 0x64));
+
+  return(lidarData);
+}
+
+String printTofData()
 {
   String tofData = "";
   VL53L0X_RangingMeasurementData_t measure;
       
   tofBackLeft.rangingTest(&measure, false);
 
-  if (measure.RangeStatus != 4)
+  if (measure.RangeStatus != 4 && measure.RangeMilliMeter != 0)
   {
       tofData = tofData + String(measure.RangeMilliMeter);
   }
@@ -3087,7 +3141,7 @@ void printTofData()
 
   tofBackRight.rangingTest(&measure, false);
 
-  if (measure.RangeStatus != 4)
+  if (measure.RangeStatus != 4 && measure.RangeMilliMeter != 0)
   {
     tofData = tofData + String(measure.RangeMilliMeter);
   }
@@ -3100,7 +3154,7 @@ void printTofData()
   
   tofFrontLeft.rangingTest(&measure, false);
 
-  if (measure.RangeStatus != 4)
+  if (measure.RangeStatus != 4 && measure.RangeMilliMeter != 0)
   {
       tofData = tofData + String(measure.RangeMilliMeter);
   }
@@ -3113,7 +3167,7 @@ void printTofData()
   
   tofFrontRight.rangingTest(&measure, false);
 
-  if (measure.RangeStatus != 4)
+  if (measure.RangeStatus != 4 && measure.RangeMilliMeter != 0)
   {
       tofData = tofData + String(measure.RangeMilliMeter);
   }
@@ -3122,5 +3176,5 @@ void printTofData()
     tofData = tofData + "???";
   }
   
-  Serial.println(tofData);
+  return(tofData);
 }
