@@ -3,11 +3,6 @@
 #include "Adafruit_VL53L0X.h"
 #include <Wire.h>
 
-int leftLidarPower = 32;
-int rightLidarPower = 34;
-int leftLidar = 6;
-int rightLidar = 7;
-
 Adafruit_VL53L0X FrontLeftTof = Adafruit_VL53L0X();
 Adafruit_VL53L0X FrontRightTof = Adafruit_VL53L0X();
 Adafruit_VL53L0X BackLeftTof = Adafruit_VL53L0X();
@@ -17,6 +12,7 @@ int frontLeftShutdown = 22;
 int frontRightShutdown = 24;
 int backLeftShutdown = 26;
 int backRightShutdown = 28;
+
 
 // Front Encoder Pins
 int frontLeftEncoderA = 2;
@@ -56,28 +52,29 @@ void setup ( )
 {  
     Serial.begin (9600); //Starting the serial communication at 9600 baud rate
 
-    //setupLidar();
-    
-    //setupTOF();
+    setupTOF();
 
     setupMotors();
     
     Serial.println("Starting up...");
 
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    analogWrite(ENA_Front, 255);;
+
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);
+    analogWrite(ENB_Front, 100);
+
+    digitalWrite(IN5, LOW);
+    digitalWrite(IN6, LOW);
+    analogWrite(ENA_Back, 100);
+
+    digitalWrite(IN7, LOW);
+    digitalWrite(IN8, LOW);
+    analogWrite(ENB_Back, 100);
+
     
-}
-
-void setupLidar()
-{
-    pinMode(leftLidarPower, OUTPUT);
-    digitalWrite(leftLidarPower, LOW); // Set trigger LOW for continuous read
-
-    pinMode(leftLidar, INPUT); // Set monitor pin
-    
-    pinMode(rightLidarPower, OUTPUT);
-    digitalWrite(rightLidarPower, LOW); // Set trigger LOW for continuous read
-
-    pinMode(rightLidar, INPUT); // Set monitor pin
 }
 
 void setupTOF()
@@ -201,84 +198,18 @@ void setupMotors()
 
 void loop()
 {
-    digitalWrite(IN1, LOW);
-    digitalWrite(IN2, HIGH);
-    analogWrite(ENA_Front, 255);;
+    Serial.print("Front Left Encoder Pos: ");
+    Serial.println(frontLeftEncoderPos);
 
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, HIGH);
-    analogWrite(ENB_Front, 255);
+    Serial.print("Front Right Encoder Pos: ");
+    Serial.println(frontRightEncoderPos);
 
-    digitalWrite(IN5, LOW);
-    digitalWrite(IN6, HIGH);
-    analogWrite(ENA_Back, 255);
+    Serial.print("Back Left Encoder Pos: ");
+    Serial.println(backLeftEncoderPos);
 
-    digitalWrite(IN7, LOW);
-    digitalWrite(IN8, HIGH);
-    analogWrite(ENB_Back, 255);
+    Serial.print("Back Right Encoder Pos: ");
+    Serial.println(backRightEncoderPos);
 
-    delay(5000);
-
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-    analogWrite(ENA_Front, 255);;
-
-    digitalWrite(IN3, LOW);
-    digitalWrite(IN4, HIGH);
-    analogWrite(ENB_Front, 255);
-
-    digitalWrite(IN5, HIGH);
-    digitalWrite(IN6, LOW);
-    analogWrite(ENA_Back, 255);
-
-    digitalWrite(IN7, LOW);
-    digitalWrite(IN8, HIGH);
-    analogWrite(ENB_Back, 255);
-
-    delay(5000);
-
-    /*
-    String frontLeftDist = readTOFSensor(FrontLeftTof);
-    String frontRightDist = readTOFSensor(FrontRightTof);
-    String backLeftDist = readTOFSensor(BackLeftTof);
-    String backRightDist = readTOFSensor(BackRightTof);
-
-    Serial.println(frontLeftDist + "," + frontRightDist + "," + backLeftDist + "," + backRightDist + "," + readLidar());
-    */
-}
-
-String readTOFSensor(Adafruit_VL53L0X sensor)
-{
-    VL53L0X_RangingMeasurementData_t measure;
-
-    sensor.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
-
-    if(measure.RangeStatus != 4)
-    {
-        return(String(int(measure.RangeMilliMeter / 10)));
-    }
-    return("-1");
-}
-
-String readLidar()
-{
-    unsigned long leftPulse = pulseIn(leftLidar, HIGH); // Count how long the pulse is high in microseconds
-
-    // If we get a reading that isn't zero, let's print it
-    if(leftPulse != 0)
-    {
-        leftPulse = leftPulse / 10; // 10usec = 1 cm of distance
-    }
-    
-    unsigned long rightPulse = pulseIn(rightLidar, HIGH); // Count how long the pulse is high in microseconds
-
-    // If we get a reading that isn't zero, let's print it
-    if(rightPulse != 0)
-    {
-        rightPulse = rightPulse / 10; // 10usec = 1 cm of distance
-    }
-    
-    return(String(leftPulse) + "," + String(rightPulse));
 }
 
 void doEncoderFrontLeft()
