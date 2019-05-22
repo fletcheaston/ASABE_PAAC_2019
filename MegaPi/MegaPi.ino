@@ -32,9 +32,21 @@
 #include "MeEEPROM.h"
 #include <Wire.h>
 #include <SoftwareSerial.h>
+#include <Servo.h>
+#include "Adafruit_VL53L0X.h"
 
 //#define DEBUG_INFO
 //#define DEBUG_INFO1
+
+#define tofBackLeftShutDown 30
+#define tofBackRightShutDown 28
+#define tofFrontLeftShutDown 26
+#define tofFrontRightShutDown 24
+
+Adafruit_VL53L0X tofBackLeft = Adafruit_VL53L0X();
+Adafruit_VL53L0X tofBackRight = Adafruit_VL53L0X();
+Adafruit_VL53L0X tofFrontLeft = Adafruit_VL53L0X();
+Adafruit_VL53L0X tofFrontRight = Adafruit_VL53L0X();
 
 Servo servos[12];  
 MeMegaPiDCMotor dc;
@@ -248,6 +260,7 @@ float RELAX_ANGLE = -1;                    //Natural balance angle,should be adj
 #define RUN 2
 #define RESET 4
 #define START 5
+#define TOF 6
 
 typedef struct
 {
@@ -1037,6 +1050,10 @@ void parseData(void)
       {
         //start
         callOK();
+      }
+     case TOF:
+      {
+        // Read and print TOF data (set up beforehand)
       }
       break;
   }
@@ -2831,6 +2848,8 @@ void setup()
   update_sensor = lasttime_speed = lasttime_angle = millis();
   blink_time = millis();
   BluetoothSource = DATA_SERIAL;
+  
+  setupTOF();
 }
 
 /**
@@ -2898,7 +2917,6 @@ void loop()
 //      bufindex = 0;
 //    }
 //  }
-
   readSerial();
   while(isAvailable)
   {
@@ -2968,4 +2986,141 @@ void loop()
   {
     line_model();
   }
+  
+  printTofData();
+}
+
+void setupTOF()
+{
+    Wire.begin();
+
+    pinMode(tofFrontLeftShutDown, OUTPUT);
+    pinMode(tofFrontRightShutDown, OUTPUT);
+    pinMode(tofBackLeftShutDown, OUTPUT);
+    pinMode(tofBackRightShutDown, OUTPUT);
+
+    delay(10);
+
+    digitalWrite(tofFrontLeftShutDown, LOW);
+    digitalWrite(tofFrontRightShutDown, LOW);
+    digitalWrite(tofBackLeftShutDown, LOW);
+    digitalWrite(tofBackRightShutDown, LOW);
+
+    delay(10);
+
+    digitalWrite(tofFrontLeftShutDown, HIGH);
+    digitalWrite(tofFrontRightShutDown, HIGH);
+    digitalWrite(tofBackLeftShutDown, HIGH);
+    digitalWrite(tofBackRightShutDown, HIGH);
+
+    delay(10);
+
+    digitalWrite(tofFrontLeftShutDown, HIGH);
+    digitalWrite(tofFrontRightShutDown, LOW);
+    digitalWrite(tofBackLeftShutDown, LOW);
+    digitalWrite(tofBackRightShutDown, LOW);
+
+    tofFrontLeft.begin(0x31);
+
+    delay(50);
+
+    digitalWrite(tofFrontRightShutDown, HIGH);
+
+    tofFrontRight.begin(0x33);
+
+    delay(50);
+
+    digitalWrite(tofBackLeftShutDown, HIGH);
+
+    tofBackLeft.begin(0x35);
+
+    delay(50);
+
+    digitalWrite(tofBackRightShutDown, HIGH);
+
+    tofBackRight.begin(0x37);
+
+    delay(100);
+
+    // Print available devices over i2c.
+    byte count = 0;
+
+    for (byte i = 1; i < 120; i++)
+    {
+
+        Wire.beginTransmission (i);
+        if (Wire.endTransmission () == 0)
+        {
+            Serial.print ("Found address: ");
+            Serial.print (i, DEC);
+            Serial.print (" (0x");
+            Serial.print (i, HEX);
+            Serial.println (")");
+            count++;
+            delay (1);  // maybe unneeded?
+        } // end of good response
+    } // end of for loop
+    Serial.println ("Done.");
+    Serial.print ("Found ");
+    Serial.print (count, DEC);
+    Serial.println (" device(s).");
+    
+}
+
+void printTofData()
+{
+  String tofData = "";
+  VL53L0X_RangingMeasurementData_t measure;
+      
+  tofBackLeft.rangingTest(&measure, false);
+
+  if (measure.RangeStatus != 4)
+  {
+      tofData = tofData + String(measure.RangeMilliMeter);
+  }
+  else
+  {
+    tofData = tofData + "???";
+  }
+  
+  tofData = tofData + ":";
+
+  tofBackRight.rangingTest(&measure, false);
+
+  if (measure.RangeStatus != 4)
+  {
+    tofData = tofData + String(measure.RangeMilliMeter);
+  }
+  else
+  {
+    tofData = tofData + "???";
+  }
+  
+  tofData = tofData + ":";
+  
+  tofFrontLeft.rangingTest(&measure, false);
+
+  if (measure.RangeStatus != 4)
+  {
+      tofData = tofData + String(measure.RangeMilliMeter);
+  }
+  else
+  {
+    tofData = tofData + "???";
+  }
+  
+  tofData = tofData + ":";
+  
+  tofFrontRight.rangingTest(&measure, false);
+
+  if (measure.RangeStatus != 4)
+  {
+      tofData = tofData + String(measure.RangeMilliMeter);
+  }
+  else
+  {
+    tofData = tofData + "???";
+  }
+  
+  Serial.println(tofData);
 }
