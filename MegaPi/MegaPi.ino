@@ -39,16 +39,16 @@
 //#define DEBUG_INFO
 //#define DEBUG_INFO1
 
-#define lidarLeftShutdown 22
-#define lidarRightShutdown 23
+#define lidarLeftShutdown 23
+#define lidarRightShutdown 22
 
 LIDARLite lidarLeft;
 LIDARLite lidarRight;
 
-#define tofBackLeftShutDown 30
-#define tofBackRightShutDown 28
-#define tofFrontLeftShutDown 26
-#define tofFrontRightShutDown 24
+#define tofBackLeftShutDown 28
+#define tofBackRightShutDown 30
+#define tofFrontLeftShutDown 24
+#define tofFrontRightShutDown 26
 
 Adafruit_VL53L0X tofBackLeft = Adafruit_VL53L0X();
 Adafruit_VL53L0X tofBackRight = Adafruit_VL53L0X();
@@ -3060,25 +3060,25 @@ void setupTOF()
     digitalWrite(tofBackLeftShutDown, LOW);
     digitalWrite(tofBackRightShutDown, LOW);
 
-    tofFrontLeft.begin(0x31);
+    tofFrontLeft.begin(0x35);
 
     delay(50);
 
     digitalWrite(tofFrontRightShutDown, HIGH);
 
-    tofFrontRight.begin(0x33);
+    tofFrontRight.begin(0x37);
 
     delay(50);
 
     digitalWrite(tofBackLeftShutDown, HIGH);
 
-    tofBackLeft.begin(0x35);
+    tofBackLeft.begin(0x39);
 
     delay(50);
 
     digitalWrite(tofBackRightShutDown, HIGH);
 
-    tofBackRight.begin(0x37);
+    tofBackRight.begin(0x41);
 
     delay(100);
     
