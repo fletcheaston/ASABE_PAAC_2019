@@ -16,10 +16,10 @@
 #include <Wire.h>
 #include <Servo.h>
 
-MeEncoderOnBoard FrontRightMotor(SLOT1);
-MeEncoderOnBoard BackRightMotor(SLOT2);
-MeEncoderOnBoard BackLeftMotor(SLOT3);
-MeEncoderOnBoard FrontLeftMotor(SLOT4);
+MeEncoderOnBoard FrontRightMotor(SLOT2);
+MeEncoderOnBoard BackRightMotor(SLOT1);
+MeEncoderOnBoard BackLeftMotor(SLOT4);
+MeEncoderOnBoard FrontLeftMotor(SLOT3);
 
 #define gripperLeftPin A8
 #define gripperRightPin A7
@@ -37,7 +37,7 @@ void isr_process_encoder1()
     }
     else
     {
-        FrontRightMotor.pulsePosPlus();;
+        FrontRightMotor.pulsePosPlus();
     }
 }
 
@@ -49,7 +49,7 @@ void isr_process_encoder2()
     }
     else
     {
-        BackRightMotor.pulsePosPlus();;
+        BackRightMotor.pulsePosPlus();
     }
 }
 
@@ -61,7 +61,7 @@ void isr_process_encoder3()
     }
     else
     {
-        BackLeftMotor.pulsePosPlus();;
+        BackLeftMotor.pulsePosPlus();
     }
 }
 
@@ -73,7 +73,7 @@ void isr_process_encoder4()
     }
     else
     {
-        FrontLeftMotor.pulsePosPlus();;
+        FrontLeftMotor.pulsePosPlus();
     }
 }
 
@@ -128,6 +128,7 @@ void setup()
     
     setupMotors();
 
+    Serial.println("Finished setup.");
 }
 
 void loop()
