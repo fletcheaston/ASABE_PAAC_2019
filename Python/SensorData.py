@@ -6,7 +6,7 @@ def main():
     while(True):
         
         try:
-            sensorSerial = serial.Serial('/dev/tty.wchusbserial1410', 57600, timeout=0.1);
+            sensorSerial = serial.Serial('/dev/ttyUSB0', 57600, timeout=0.1);
             
             while(True):
                 
