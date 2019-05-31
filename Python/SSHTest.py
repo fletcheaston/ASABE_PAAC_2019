@@ -24,23 +24,31 @@ def speedCommand(robotSerial, args):
 
     
 def positionCommand(robotSerial, args):
+    validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
+    
     try:
         
-        try:
-            position = int(args[1]);
+        if(args[1] in validDirections):
+            direction = args[1];
             
             try:
-                speed = int(args[2]);
-                setMotorPositionDelta(robotSerial, position, position, position, position, speed);
-
-            except:
-                print("Not a valid speed.");
+                distance = int(args[2]);
             
-        except:
-            print("Not a valid position.");
+                try:
+                    speed = int(args[3]);
+                    setDirectionPosition(direction, distance, speed);
+
+                except:
+                    print("Not a valid speed.");
+            
+            except:
+                print("Not a valid distance.");
+            
+        else:
+            print("Not a valid direction.");
     
     except:
-        print("Not enough arguments. Position and speed required.");
+        print("Bad arguments. Direction, distance, and speed required.");
         
 def rotateCommand(robotSerial, args):
     try:
