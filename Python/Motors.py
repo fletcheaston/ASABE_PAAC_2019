@@ -3,6 +3,7 @@
 from Position import *;
 import time;
 
+
 # Passes the speed of 0 to all motors.
 def stopMotors(motorSerial):
     setMotorSpeed(motorSerial, 0, 0, 0, 0);
@@ -35,15 +36,15 @@ def setMotorPosition(motorSerial, frPos, frSpeed, brPos, brSpeed, blPos, blSpeed
     writeSerialString(motorSerial, string);
 
 
-# Reads the motor positons (and speeds) from the MegaPi and returns
+# Reads the motor positons (and speeds) from the MegaPi and returns an array of positions.
 def getMotorPosition(motorSerial):
     
     motorSerial.write(b"M");
     
     time.sleep(0.1);
     
-    motorSpeeds = motorSerial.readline().decode().strip().split(' ');
-    motorPositions = motorSerial.readline().decode().strip().split(' ');
+    motorSpeeds = motorSerial.readline().decode().strip().split(',');
+    motorPositions = motorSerial.readline().decode().strip().split(',');
     motorPositions[0] = int(motorPositions[0]);
     motorPositions[1] = int(motorPositions[1]);
     motorPositions[2] = int(motorPositions[2]);
@@ -51,7 +52,8 @@ def getMotorPosition(motorSerial):
 
     return(motorPositions);
 
-    
+
+# Adjusts relative motor positions.
 def setMotorPositionDelta(motorSerial, frPos, brPos, blPos, flPos, allSpeed):
     currentPos = getMotorPosition(motorSerial);
     newfrPos = frPos + currentPos[0];
@@ -62,6 +64,7 @@ def setMotorPositionDelta(motorSerial, frPos, brPos, blPos, flPos, allSpeed):
     setMotorPosition(motorSerial, newfrPos, allSpeed, newbrPos, allSpeed, newblPos, allSpeed, newflPos, allSpeed);
 
 
+# Utility method to write data to the robot.
 def writeSerialString(motorSerial, string):
     bytes = string.encode();
     motorSerial.write(bytes);

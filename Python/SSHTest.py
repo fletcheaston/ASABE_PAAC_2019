@@ -2,43 +2,45 @@ import serial
 import time
 from Motors import *
 
-def speedCommand(robotSerial):
-    direction = None;
-    while(True):
-        direction = input("Enter a direction: ").upper();
-        if(direction in validDirections):
-            break;
-        else:
-            print("Not a valid direction. Try again.");
-    
-    speed = None;
-    while(speed is None):
-        try:
-            speed = int(input("Enter a speed: "));
-        except:
-            print("Not an integer. Try again.");
-            speed = None;
+def speedCommand(robotSerial, args):
+    validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
 
-    setDirectionSpeed(robotSerial, direction, speed);
+    try:
+        if(args[1] in validDirections):
+            direction = args[1];
+            try:
+                speed = int(args[2]);
+                setDirectionSpeed(robotSerial, direction, speed);
+
+            except:
+                print("Not a valid speed.");
+            
+        else:
+            print("Not a valid direction.");
+    
+    except:
+        print("Not enough arguments. Direction and speed required.");
+
     
 def positionCommand(robotSerial):
-    position = None;
-    while(position is None):
+    try:
+        
         try:
-            position = int(input("Enter a position: "));
-        except:
-            print("Not an integer. Try again.");
-            speed = None;
-    
-    speed = None;
-    while(speed is None):
-        try:
-            speed = int(input("Enter a speed: "));
-        except:
-            print("Not an integer. Try again.");
-            speed = None;
+            position = int(args[1]);
+            
+            try:
+                speed = int(args[2]);
+                setMotorPositionDelta(robotSerial, position, position, position, position, speed);
 
-    setMotorPositionDelta(robotSerial, position, position, position, position, speed);
+            except:
+                print("Not a valid speed.");
+            
+        except:
+            print("Not a valid position.");
+    
+    except:
+        print("Not enough arguments. Position and speed required.");
+
 
 def stopCommand(robotSerial):
     print("Stopping robot.");
@@ -51,18 +53,16 @@ time.sleep(5);
 while(robotSerial.in_waiting > 0):
     print(robotSerial.readline().decode().strip());
 
-validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
-
 while(True):
         
-    command = input("Enter a command: ").upper();
+    command = input("Enter a command: ").upper().split(" ");
     
-    if(command == "SPEED"):
-        speedCommand(robotSerial);
-    elif(command == "STOP"):
-        stopCommand(robotSerial);
-    elif(command == "POSITION"):
-        positionCommand(robotSerial);
+    if(command[0] == "SPEED"):
+        speedCommand(robotSerial, command);
+    elif(command[0] == "STOP"):
+        stopCommand(robotSerial, command);
+    elif(command[0] == "POSITION"):
+        positionCommand(robotSerial, command);
         
     
     time.sleep(0.1);
