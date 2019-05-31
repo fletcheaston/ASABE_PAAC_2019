@@ -1,6 +1,7 @@
 #Created by Fletcher Easton
 
 from Position import *;
+import time;
 
 # Passes the speed of 0 to all motors.
 def stopMotors(motorSerial):
