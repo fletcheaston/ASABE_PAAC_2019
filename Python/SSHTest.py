@@ -14,7 +14,8 @@ while(True):
             stopMotors(robotSerial);
         elif(direction in validDirections):
             break;
-        print("Not a valid direction. Try again.");
+        else:
+            print("Not a valid direction. Try again.");
     
     speed = None;
     while(speed is None):
