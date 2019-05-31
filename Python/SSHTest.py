@@ -22,6 +22,6 @@ while(True):
             print("Not an integer. Try again.");
             speed = None;
 
-    setDirectionSpeed(robotSerial, direction, speed):
+    setDirectionSpeed(robotSerial, direction, speed);
     
     time.sleep(0.1);
