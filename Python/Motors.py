@@ -35,11 +35,11 @@ def setDirectionPosition(motorSerial, direction, distance, speed):
         setMotorPositionDelta(motorSerial, adjustedDistance, -1 * adjustedDistance, -1 * adjustedDistance, adjustedDistance, speed);
         
     elif(direction == "FORWARD"):
-        adjustedDistance = 1 * distance;
+        adjustedDistance = 17.9772049042 * distance;
         setMotorPositionDelta(motorSerial, -1 * adjustedDistance, -1 * adjustedDistance, adjustedDistance, adjustedDistance, speed);
         
     elif(direction == "BACKWARD"):
-        adjustedDistance = 1 * distance;
+        adjustedDistance = 17.9772049042 * distance;
         setMotorPositionDelta(motorSerial, adjustedDistance, adjustedDistance, -1 * adjustedDistance, -1 * adjustedDistance, speed);
         
     elif(direction == "LEFT"):
