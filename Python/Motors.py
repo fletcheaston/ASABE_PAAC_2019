@@ -31,19 +31,19 @@ def setDirectionSpeed(motorSerial, direction, speed):
 # Moves the robot in one of four predefined ways. Direction is local to the robot. Distance is in centimeters.
 def setDirectionPosition(motorSerial, direction, distance, speed):
     if(direction == "RIGHT"):
-        adjustedDistance = 1 * distance;
+        adjustedDistance = int(1 * distance);
         setMotorPositionDelta(motorSerial, adjustedDistance, -1 * adjustedDistance, -1 * adjustedDistance, adjustedDistance, speed);
         
     elif(direction == "FORWARD"):
-        adjustedDistance = 17.9772049042 * distance;
+        adjustedDistance = int(17.9772049042 * distance);
         setMotorPositionDelta(motorSerial, -1 * adjustedDistance, -1 * adjustedDistance, adjustedDistance, adjustedDistance, speed);
         
     elif(direction == "BACKWARD"):
-        adjustedDistance = 17.9772049042 * distance;
+        adjustedDistance = int(17.9772049042 * distance);
         setMotorPositionDelta(motorSerial, adjustedDistance, adjustedDistance, -1 * adjustedDistance, -1 * adjustedDistance, speed);
         
     elif(direction == "LEFT"):
-        adjustedDistance = 1 * distance;
+        adjustedDistance = int(1 * distance);
         setMotorPositionDelta(motorSerial, -1 * adjustedDistance, adjustedDistance, adjustedDistance, -1 * adjustedDistance, speed);
         
     else:
