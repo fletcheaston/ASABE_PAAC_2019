@@ -36,7 +36,7 @@ def positionCommand(robotSerial, args):
             
                 try:
                     speed = int(args[3]);
-                    setDirectionPosition(direction, distance, speed);
+                    setDirectionPosition(robotSerial, direction, distance, speed);
 
                 except:
                     print("Not a valid speed.");
