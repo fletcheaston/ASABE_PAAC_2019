@@ -10,9 +10,11 @@ while(True):
     direction = None;
     while(True):
         direction = input("Enter a direction: ").upper();
+        if(direction == "STOP"):
+            stopMotors(robotSerial);
         if(direction in validDirections):
             break;
-        print("Not a valid ")
+        print("Not a valid direction. Try again.");
     
     speed = None;
     while(speed is None):

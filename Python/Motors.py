@@ -2,6 +2,9 @@
 
 from Position import *;
 
+def stopMotors(motorSerial):
+    setMotorSpeed(motorSerial, 0, 0, 0, 0);
+
 def setDirectionSpeed(motorSerial, direction, speed):
     if(direction == "RIGHT"):
         setMotorSpeed(motorSerial, speed, -1 * speed, -1 * speed, speed);

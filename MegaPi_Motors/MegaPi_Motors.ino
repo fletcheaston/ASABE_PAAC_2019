@@ -16,10 +16,10 @@
 #include <Wire.h>
 #include <Servo.h>
 
-MeEncoderOnBoard FrontRightMotor(SLOT2);
-MeEncoderOnBoard BackRightMotor(SLOT1);
-MeEncoderOnBoard BackLeftMotor(SLOT4);
-MeEncoderOnBoard FrontLeftMotor(SLOT3);
+MeEncoderOnBoard FrontRightMotor(SLOT3);
+MeEncoderOnBoard BackRightMotor(SLOT4);
+MeEncoderOnBoard BackLeftMotor(SLOT1);
+MeEncoderOnBoard FrontLeftMotor(SLOT2);
 
 #define gripperLeftPin A8
 #define gripperRightPin A7
