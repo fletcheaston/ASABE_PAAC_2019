@@ -4,14 +4,18 @@ from Motors import *
 import sys
 
 def speedSetCommand(args):
+    global robotSpeed;
+    
     try:
         robotSpeed = int(args[1]);
+        print("Speed set to " + str(robotSpeed));
     except:
         print("Not a valid speed.");
 
 def velocityCommand(robotSerial, args):
     validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
-
+    global robotSpeed;
+    
     try:
         if(args[1] in validDirections):
             direction = args[1];
@@ -27,6 +31,7 @@ def velocityCommand(robotSerial, args):
     
 def positionCommand(robotSerial, args):
     validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
+    global robotSpeed;
     
     try:
         
@@ -48,6 +53,8 @@ def positionCommand(robotSerial, args):
         print("Bad arguments. Direction, distance, and speed required.");
         
 def rotateCommand(robotSerial, args):
+    global robotSpeed;
+    
     try:
         
         try:
@@ -68,33 +75,37 @@ def stopCommand(robotSerial):
     print("Stopping robot.");
     stopMotors(robotSerial);
 
-robotSpeed = 100;
-robotSerial = serial.Serial(port="/dev/ttyUSB0", baudrate=57600, timeout=0.1);
+def main():
+    global robotSpeed = 100;
+    global robotSerial = serial.Serial(port="/dev/ttyUSB0", baudrate=57600, timeout=0.1);
 
-time.sleep(5);
+    time.sleep(5);
 
-while(robotSerial.in_waiting > 0):
-    print(robotSerial.readline().decode().strip());
+    while(robotSerial.in_waiting > 0):
+        print(robotSerial.readline().decode().strip());
 
-while(True):
+    while(True):
+            
+        command = input("Enter a command: ").upper().split(" ");
         
-    command = input("Enter a command: ").upper().split(" ");
-    
-    if(command[0] == "STOP"):
-        stopCommand(robotSerial);
-    elif(command[0] == "SPEED"):
-        speedSetCommand(command);
-    elif(command[0] == "VELOCITY"):
-        velocityCommand(robotSerial, command);
-    elif(command[0] == "POSITION"):
-        positionCommand(robotSerial, command);
-    elif(command[0] == "ROTATE"):
-        rotateCommand(robotSerial, command);
-    elif(command[0] == "MOTOR"):
-        motorDataCommand(robotSerial);
-    elif(command[0] == "QUIT"):
-        stopCommand(robotSerial);
-        sys.exit(0);
-        
-    
-    time.sleep(0.1);
+        if(command[0] == "STOP"):
+            stopCommand(robotSerial);
+        elif(command[0] == "SPEED"):
+            speedSetCommand(command);
+        elif(command[0] == "VELOCITY"):
+            velocityCommand(robotSerial, command);
+        elif(command[0] == "POSITION"):
+            positionCommand(robotSerial, command);
+        elif(command[0] == "ROTATE"):
+            rotateCommand(robotSerial, command);
+        elif(command[0] == "MOTOR"):
+            motorDataCommand(robotSerial);
+        elif(command[0] == "QUIT"):
+            stopCommand(robotSerial);
+            sys.exit(0);
+
+        time.sleep(0.1);
+
+
+if __name__== "__main__":
+    main();

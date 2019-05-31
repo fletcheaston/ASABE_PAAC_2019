@@ -71,7 +71,7 @@ def readMotorData(motorSerial):
     motorSpeeds = motorSerial.readline().decode().strip();
     motorPositions = motorSerial.readline().decode().strip();
     
-    return(motorSpeeds + " " + motorPositions);
+    return("Speed: " + str(motorSpeeds) + "\nPosition: " + str(motorPositions));
 
 # Reads the motor positons (and speeds) from the MegaPi and returns an array of positions.
 def getMotorPosition(motorSerial):
