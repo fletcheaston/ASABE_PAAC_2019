@@ -3,18 +3,20 @@ import time
 from Motors import *
 import sys
 
-def speedCommand(robotSerial, args):
+def speedSetCommand(args):
+    try:
+        robotSpeed = int(args[1]);
+    except:
+        print("Not a valid speed.");
+
+def velocityCommand(robotSerial, args):
     validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
 
     try:
         if(args[1] in validDirections):
             direction = args[1];
-            try:
-                speed = int(args[2]);
-                setDirectionSpeed(robotSerial, direction, speed);
-
-            except:
-                print("Not a valid speed.");
+            
+            setDirectionSpeed(robotSerial, direction, robotSpeed);
             
         else:
             print("Not a valid direction.");
@@ -34,12 +36,7 @@ def positionCommand(robotSerial, args):
             try:
                 distance = int(args[2]);
             
-                try:
-                    speed = int(args[3]);
-                    setDirectionPosition(robotSerial, direction, distance, speed);
-
-                except:
-                    print("Not a valid speed.");
+                setDirectionPosition(robotSerial, direction, distance, robotSpeed);
             
             except:
                 print("Not a valid distance.");
@@ -56,12 +53,7 @@ def rotateCommand(robotSerial, args):
         try:
             angle = int(args[1]);
             
-            try:
-                speed = int(args[2]);
-                rotate(robotSerial, angle, speed);
-
-            except:
-                print("Not a valid speed.");
+            rotate(robotSerial, angle, robotSpeed);
             
         except:
             print("Not a valid angle.");
@@ -76,6 +68,7 @@ def stopCommand(robotSerial):
     print("Stopping robot.");
     stopMotors(robotSerial);
 
+robotSpeed = 100;
 robotSerial = serial.Serial(port="/dev/ttyUSB0", baudrate=57600, timeout=0.1);
 
 time.sleep(5);
@@ -90,7 +83,9 @@ while(True):
     if(command[0] == "STOP"):
         stopCommand(robotSerial);
     elif(command[0] == "SPEED"):
-        speedCommand(robotSerial, command);
+        speedSetCommand(command);
+    elif(command[0] == "VELOCITY"):
+        velocityCommand(robotSerial, command);
     elif(command[0] == "POSITION"):
         positionCommand(robotSerial, command);
     elif(command[0] == "ROTATE"):
