@@ -76,8 +76,8 @@ def stopCommand(robotSerial):
     stopMotors(robotSerial);
 
 def main():
-    global robotSpeed = 100;
-    global robotSerial = serial.Serial(port="/dev/ttyUSB0", baudrate=57600, timeout=0.1);
+    robotSpeed = 100;
+    robotSerial = serial.Serial(port="/dev/ttyUSB0", baudrate=57600, timeout=0.1);
 
     time.sleep(5);
 
