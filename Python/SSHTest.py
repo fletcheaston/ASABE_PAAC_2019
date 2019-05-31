@@ -2,7 +2,7 @@ import serial
 import time
 from Motors import *
 
-robotSerial = serial.Serial(port="/dev/ttyUSB1", baudrate=57600, timeout=0.1);
+robotSerial = serial.Serial(port="/dev/ttyUSB0", baudrate=57600, timeout=0.1);
 validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
 
 while(True):
@@ -12,7 +12,7 @@ while(True):
         direction = input("Enter a direction: ").upper();
         if(direction == "STOP"):
             stopMotors(robotSerial);
-        if(direction in validDirections):
+        elif(direction in validDirections):
             break;
         print("Not a valid direction. Try again.");
     
