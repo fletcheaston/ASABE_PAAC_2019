@@ -3,8 +3,6 @@
 // Drives four DC motors with encoders (using the MegaPi slots)
 // Drives two servos (using the analog pins)
 
-#define DEBUG
-
 #ifdef DEBUG
   #define DEBUG_PRINT(x) Serial.println(x);
 #else
@@ -174,7 +172,6 @@ void loop()
             case 'R':
             {
                 // Reset all components
-                DEBUG_PRINT("Resetting the program...");
                 setup();
             }
             break;
@@ -182,7 +179,6 @@ void loop()
             case 'Q':
             {
                 // Quit the program.
-                DEBUG_PRINT("Quitting the program...");
                 quit();
             }
 
@@ -214,23 +210,18 @@ void quit()
 
 void readAndRunMotorSpeed()
 {
-    DEBUG_PRINT("Setting motor speed...");
 
     int motor1Speed = 0;
     motor1Speed = Serial.parseInt();
-    DEBUG_PRINT("FrontRightMotor speed set to " + String(motor1Speed));
   
     int motor2Speed = 0;
     motor2Speed = Serial.parseInt();
-    DEBUG_PRINT("BackRightMotor speed set to " + String(motor2Speed));
   
     int motor3Speed = 0;
     motor3Speed = Serial.parseInt();
-    DEBUG_PRINT("BackLeftMotor speed set to " + String(motor3Speed));
 
     int motor4Speed = 0;
     motor4Speed = Serial.parseInt();
-    DEBUG_PRINT("FrontLeftMotor speed set to " + String(motor4Speed));
   
     FrontRightMotor.runSpeed(motor1Speed);
     BackRightMotor.runSpeed(motor2Speed);

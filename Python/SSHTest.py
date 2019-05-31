@@ -45,6 +45,12 @@ def stopCommand(robotSerial):
     stopMotors(robotSerial);
 
 robotSerial = serial.Serial(port="/dev/ttyUSB0", baudrate=57600, timeout=0.1);
+
+time.sleep(5);
+
+while(robotSerial.in_waiting > 0):
+    print(robotSerial.readline().decode().strip());
+
 validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
 
 while(True):
