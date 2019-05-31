@@ -38,7 +38,7 @@ def positionCommand(robotSerial):
             print("Not an integer. Try again.");
             speed = None;
 
-    setMotorPositionDelta(robotSerial, position, speed);
+    setMotorPositionDelta(robotSerial, position, position, position, position, speed);
 
 def stopCommand(robotSerial):
     print("Stopping robot.");
@@ -48,7 +48,7 @@ robotSerial = serial.Serial(port="/dev/ttyUSB0", baudrate=57600, timeout=0.1);
 validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
 
 while(True):
-    
+        
     command = input("Enter a command: ").upper();
     
     if(command == "SPEED"):
