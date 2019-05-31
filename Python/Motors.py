@@ -61,6 +61,17 @@ def setMotorPosition(motorSerial, frPos, frSpeed, brPos, brSpeed, blPos, blSpeed
     string = "P " + str(frPos) + " " + str(frSpeed) + " " + str(brPos) + " " + str(brSpeed) + " " + str(blPos) + " " + str(blSpeed) + " " + str(flPos) + " " + str(flSpeed) + " ";
     writeSerialString(motorSerial, string);
 
+# Reads motor speed and position from the MegaPi and returns everything in a string.
+def readMotorData(motorSerial):
+    
+    motorSerial.write(b"M");
+    
+    time.sleep(0.1);
+    
+    motorSpeeds = motorSerial.readline().decode().strip();
+    motorPositions = motorSerial.readline().decode().strip();
+    
+    return(motorSpeeds + " " + motorPositions);
 
 # Reads the motor positons (and speeds) from the MegaPi and returns an array of positions.
 def getMotorPosition(motorSerial):

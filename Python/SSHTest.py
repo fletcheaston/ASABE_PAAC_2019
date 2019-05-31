@@ -69,6 +69,8 @@ def rotateCommand(robotSerial, args):
     except:
         print("Not enough arguments. Angle and speed required.");
 
+def motorDataCommand(robotSerial):
+    print(readMotorData(robotSerial));
 
 def stopCommand(robotSerial):
     print("Stopping robot.");
@@ -93,6 +95,8 @@ while(True):
         positionCommand(robotSerial, command);
     elif(command[0] == "ROTATE"):
         rotateCommand(robotSerial, command);
+    elif(command[0] == "MOTOR"):
+        motorDataCommand(robotSerial);
     elif(command[0] == "QUIT"):
         stopCommand(robotSerial);
         sys.exit(0);
