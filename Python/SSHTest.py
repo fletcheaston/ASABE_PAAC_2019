@@ -1,6 +1,7 @@
 import serial
 import time
 from Motors import *
+import sys
 
 def speedCommand(robotSerial, args):
     validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
@@ -22,7 +23,7 @@ def speedCommand(robotSerial, args):
         print("Not enough arguments. Direction and speed required.");
 
     
-def positionCommand(robotSerial):
+def positionCommand(robotSerial, args):
     try:
         
         try:
@@ -40,6 +41,25 @@ def positionCommand(robotSerial):
     
     except:
         print("Not enough arguments. Position and speed required.");
+        
+def rotateCommand(robotSerial, args):
+    try:
+        
+        try:
+            angle = int(args[1]);
+            
+            try:
+                speed = int(args[2]);
+                rotate(robotSerial, angle, speed);
+
+            except:
+                print("Not a valid speed.");
+            
+        except:
+            print("Not a valid angle.");
+    
+    except:
+        print("Not enough arguments. Angle and speed required.");
 
 
 def stopCommand(robotSerial):
@@ -57,12 +77,17 @@ while(True):
         
     command = input("Enter a command: ").upper().split(" ");
     
-    if(command[0] == "SPEED"):
+    if(command[0] == "STOP"):
+        stopCommand(robotSerial);
+    elif(command[0] == "SPEED"):
         speedCommand(robotSerial, command);
-    elif(command[0] == "STOP"):
-        stopCommand(robotSerial, command);
     elif(command[0] == "POSITION"):
         positionCommand(robotSerial, command);
+    elif(command[0] == "ROTATE"):
+        rotateCommand(robotSerial, command);
+    elif(command[0] == "QUIT"):
+        stopCommand(robotSerial);
+        sys.exit(0);
         
     
     time.sleep(0.1);
