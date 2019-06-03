@@ -30,7 +30,6 @@ def velocityCommand(robotSerial, args, robotSpeed):
     
 def positionCommand(robotSerial, args, robotSpeed):
     validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
-    global robotSpeed;
     
     try:
         
@@ -51,9 +50,7 @@ def positionCommand(robotSerial, args, robotSpeed):
     except:
         print("Bad arguments. Direction, distance, and speed required.");
         
-def rotateCommand(robotSerial, args, robotSpeed):
-    global robotSpeed;
-    
+def rotateCommand(robotSerial, args, robotSpeed):    
     try:
         
         try:

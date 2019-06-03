@@ -103,7 +103,7 @@ def setMotorPositionDelta(motorSerial, frPos, brPos, blPos, flPos, allSpeed):
 
 # Rotates the robot by a specified angle and speed.
 def rotate(motorSerial, angle, speed):
-    realAngle = int(6.4809917355 * angle);
+    realAngle = int(6.0288295214 * angle);
     setMotorPositionDelta(motorSerial, realAngle, realAngle, realAngle, realAngle, speed);
 
 # Utility method to write data to the robot.
