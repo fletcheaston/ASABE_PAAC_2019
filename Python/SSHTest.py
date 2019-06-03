@@ -3,18 +3,17 @@ import time
 from Motors import *
 import sys
 
-def speedSetCommand(args):
-    global robotSpeed;
-    
+def speedSetCommand(args):    
     try:
         robotSpeed = int(args[1]);
         print("Speed set to " + str(robotSpeed));
+        return(robotSpeed);
     except:
         print("Not a valid speed.");
+        return(0);
 
-def velocityCommand(robotSerial, args):
+def velocityCommand(robotSerial, args, robotSpeed):
     validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
-    global robotSpeed;
     
     try:
         if(args[1] in validDirections):
@@ -29,7 +28,7 @@ def velocityCommand(robotSerial, args):
         print("Not enough arguments. Direction and speed required.");
 
     
-def positionCommand(robotSerial, args):
+def positionCommand(robotSerial, args, robotSpeed):
     validDirections = ["FORWARD", "BACKWARD", "LEFT", "RIGHT"];
     global robotSpeed;
     
@@ -52,7 +51,7 @@ def positionCommand(robotSerial, args):
     except:
         print("Bad arguments. Direction, distance, and speed required.");
         
-def rotateCommand(robotSerial, args):
+def rotateCommand(robotSerial, args, robotSpeed):
     global robotSpeed;
     
     try:
@@ -91,13 +90,13 @@ def main():
         if(command[0] == "STOP"):
             stopCommand(robotSerial);
         elif(command[0] == "SPEED"):
-            speedSetCommand(command);
+            robotSpeed = speedSetCommand(command);
         elif(command[0] == "VELOCITY"):
-            velocityCommand(robotSerial, command);
+            velocityCommand(robotSerial, command, robotSpeed);
         elif(command[0] == "POSITION"):
-            positionCommand(robotSerial, command);
+            positionCommand(robotSerial, command, robotSpeed);
         elif(command[0] == "ROTATE"):
-            rotateCommand(robotSerial, command);
+            rotateCommand(robotSerial, command, robotSpeed);
         elif(command[0] == "MOTOR"):
             motorDataCommand(robotSerial);
         elif(command[0] == "QUIT"):
