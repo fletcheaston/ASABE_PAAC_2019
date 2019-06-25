@@ -68,13 +68,13 @@ def setDirectionPosition(motorSerial, direction, distance, speed):
 
 # Sets all motors to their respective passed-in speeds.
 def setMotorSpeed(motorSerial, frontRightSpeed, backRightSpeed, backLeftSpeed, frontLeftSpeed):
-    string = "S " + str(frontRightSpeed) + " " + str(backLeftSpeed) + " " + str(backRightSpeed) + " " + str(frontLeftSpeed) + " ";
+    string = "S " + str(frontRightSpeed) + " " + str(backRightSpeed) + " " + str(backLeftSpeed) + " " + str(frontLeftSpeed) + " ";
     writeSerialString(motorSerial, string);
 
 
 # Moves all motors to their respective passed-in positions, at their respective passed-in speeds.
 def setMotorPosition(motorSerial, frPos, frSpeed, brPos, brSpeed, blPos, blSpeed, flPos, flSpeed):
-    string = "P " + str(frPos) + " " + str(frSpeed) + " " + str(blPos) + " " + str(blSpeed) + " " + str(brPos) + " " + str(brSpeed) + " " + str(flPos) + " " + str(flSpeed) + " ";
+    string = "P " + str(frPos) + " " + str(frSpeed) + " " + str(brPos) + " " + str(brSpeed) + " " + str(blPos) + " " + str(blSpeed) + " " + str(flPos) + " " + str(flSpeed) + " ";
     writeSerialString(motorSerial, string);
 
 
