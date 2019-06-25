@@ -25,6 +25,9 @@ motorSerial.write(b"M");
 
 time.sleep(0.1);
 
-while(motorSerial.in_waiting > 0):
-    time.sleep(0.1);
-    print(motorSerial.readline().decode());
+while(True):
+    while(motorSerial.in_waiting > 0):
+        time.sleep(0.1);
+        print(motorSerial.readline().decode());
+
+    time.sleep(1);
