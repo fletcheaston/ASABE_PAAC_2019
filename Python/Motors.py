@@ -11,7 +11,7 @@ def angleConstant():
 
 # The forward/backward-constant for moving the robot.
 def longitudinalConstant():
-    return(1);
+    return(20.3491866233);
 
 
 # The side-to-side-constant for moving the robot.

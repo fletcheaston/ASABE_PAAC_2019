@@ -17,7 +17,7 @@ while(motorSerial.in_waiting > 0):
 time.sleep(1);
 
 print("Forward");
-setDirectionPosition(motorSerial, "FORWARD", 500, 255);
+setDirectionPosition(motorSerial, "FORWARD", 5000, 255);
 
 time.sleep(5);
 
