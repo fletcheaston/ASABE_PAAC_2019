@@ -27,7 +27,7 @@ def stopMotors(motorSerial):
 # Moves the robot in one of four predefined ways. Direction is local to the robot.
 def setDirectionSpeed(motorSerial, direction, speed):
     if(direction == "RIGHT"):
-        setMotorSpeed(motorSerial, speed, -1 * speed, -1 * speed, speed);
+        setMotorSpeed(motorSerial, -1 * speed, speed, -1 * speed, speed);
 
     elif(direction == "FORWARD"):
         setMotorSpeed(motorSerial, -1 * speed, -1 * speed, speed, speed);
@@ -36,7 +36,7 @@ def setDirectionSpeed(motorSerial, direction, speed):
         setMotorSpeed(motorSerial, speed, speed, -1 * speed, -1 * speed);
 
     elif(direction == "LEFT"):
-        setMotorSpeed(motorSerial, -1 * speed, speed, speed, -1 * speed);
+        setMotorSpeed(motorSerial, speed, -1 * speed, speed, -1 * speed);
 
     else:
         print("Invalid direction: {!r}".format(direction));

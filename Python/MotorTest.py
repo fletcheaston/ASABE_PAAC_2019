@@ -6,6 +6,9 @@ import serial;
 
 motorSerial = serial.Serial('/dev/ttyUSB0', 57600, timeout=0.1);
 
+dirs = ["FORWARD", "LEFT", "BACKWARD", "RIGHT"];
+counter = 0;
+timeCounter = 0;
 speed = 255;
 
 time.sleep(5);
@@ -16,18 +19,18 @@ while(motorSerial.in_waiting > 0):
 
 time.sleep(1);
 
-print("Forward");
-setDirectionPosition(motorSerial, "FORWARD", 100, 255);
-
-time.sleep(5);
-
 while(True):
-    motorSerial.write(b"M");
+    timeCounter = time.time();
 
-    time.sleep(0.1);
+    setDirectionPosition(motorSerial, dirs[counter % 4], 100, 255);
 
-    while(motorSerial.in_waiting > 0):
-        time.sleep(0.1);
-        print(motorSerial.readline().decode());
+    while(timeCounter < time.time() - 5):
+        motorSerial.write(b"M");
 
-    time.sleep(1);
+        time.sleep(0.25);
+
+        while(motorSerial.in_waiting > 0):
+            time.sleep(0.1);
+            print(motorSerial.readline().decode().strip());
+
+    counter = counter + 1;
