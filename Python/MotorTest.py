@@ -24,7 +24,7 @@ while(True):
 
     setDirectionSpeed(motorSerial, dirs[counter % 4], 255);
 
-    while(timeCounter < time.time() - 5):
+    while(time.time() - timeCounter < 5):
         motorSerial.write(b"M");
 
         time.sleep(0.25);
@@ -33,4 +33,6 @@ while(True):
             time.sleep(0.1);
             print(motorSerial.readline().decode().strip());
 
+    stopMotors(motorSerial);
+    time.sleep(0.25);
     counter = counter + 1;
