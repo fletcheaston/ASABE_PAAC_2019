@@ -47,7 +47,7 @@ def setDirectionSpeed(motorSerial, direction, speed):
 def setDirectionPosition(motorSerial, direction, distance, speed):
     if(direction == "RIGHT"):
         adjustedDistance = int(lateralConstant() * distance);
-        setMotorPositionDelta(motorSerial, adjustedDistance, -1 * adjustedDistance, -1 * adjustedDistance, adjustedDistance, speed);
+        setMotorPositionDelta(motorSerial, -1 * adjustedDistance, adjustedDistance, -1 * adjustedDistance, adjustedDistance, speed);
 
     elif(direction == "FORWARD"):
         adjustedDistance = int(longitudinalConstant() * distance);
@@ -59,7 +59,7 @@ def setDirectionPosition(motorSerial, direction, distance, speed):
 
     elif(direction == "LEFT"):
         adjustedDistance = int(lateralConstant() * distance);
-        setMotorPositionDelta(motorSerial, -1 * adjustedDistance, adjustedDistance, adjustedDistance, -1 * adjustedDistance, speed);
+        setMotorPositionDelta(motorSerial, adjustedDistance, -1 * adjustedDistance, adjustedDistance, -1 * adjustedDistance, speed);
 
     else:
         print("Invalid direction: {!r}".format(direction));
