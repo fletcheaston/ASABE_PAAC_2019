@@ -1,0 +1,50 @@
+What the robot must do...
+
+- Move around board
+-- Must know location
+--- Requires a coordinate system
+---- Determined by starting location? Or not?
+--- Read location data from MegaPi
+---- Parse data
+---- Translate multiple distances into coordinates
+---- Determine which readings are "trustworthy" and which aren't
+----- "Trustworthy" readings are readings that are similar (or within the expected range) of the last calculated position
+----- "Untrustworthy" readings include sensors blocked by plants, malfunctioning sensors, ..?
+---- Reset sensors when multiple readings are the same (I2C address likely lost)
+-- Must move from current location to another
+--- Must maintain orientation aligned with axes
+---- When moving in the Y-direction, robot might rotate slightly
+----- Compensate by rolling robot into the walls to realign the wheels with the axes
+----- Can be done anytime we pick up or set down plants
+--- Must move reliably
+---- Regularly test and update wheel rotation constants
+----- Account for differences in surfaces (concrete flooring vs game board)
+----- Will need to update in Boston for the specific game board
+---- Combine data from motor positions and distance sensors
+----- Will need to retest accuracy of distance sensors
+----- Rely upon motor positions if necessary
+-- Must pathfind
+--- Have predetermined locations for plant pick up and drop off
+--- Move along axes
+--- Avoid hitting plants
+- Identify plants
+-- Position robot directly in front of plants
+-- Call Amando's code to identify which colored plant is directly in front of the robot
+- Pick up plants
+-- Know which grippers are free and which are empty
+-- Position the robot over the plant in a gripper
+--- The robot must shift in the Y-direction slightly
+---- Don't hit the plant with the center wall
+---- Move forward so the plant lines up with a gripper
+- Drop off plants
+-- Avoid previously placed plants
+--- Push up against the wall in the Y-direction
+--- Drop plants off as far back as possible in each zone
+--- Determine next available drop off location
+---- Next drop off location based on furthest forward dropped off plant
+- Avoid running into plants
+-- Avoiding placed plants
+--- Keep track of previous drop off locations
+---- Give minimum space between dropped off plants, to maximize number of plants that can be held in each zone
+-- Avoiding new plants
+--- Ensure pathfinding keeps robot from running through new plants

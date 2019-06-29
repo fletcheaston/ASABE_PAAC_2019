@@ -4,8 +4,7 @@ from Position import *;
 from Dimension import *;
 
 class Plant:
-    def __init__(self, position, dimension, color):
+    def __init__(self, position, dimension):
         self.position = position;
-        self.dimension = dimension;
         self.color = color;
         self.inPosition = False;
