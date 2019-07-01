@@ -7,8 +7,8 @@ import threading
 
 class detection:
     def __init__(self):
-        self.check_red_count = 0
         self.check_green_count = 0
+        self.check_red_count = 0
         self.show_image = None
         self.camera = PiCamera()
         self.camera.framerate = 32
@@ -21,13 +21,6 @@ class detection:
             
     def __call__(self, show_image = None, time = 5):
         self.show_image = show_image
-        red_timer = threading.Timer(time, self.run_red())
-        red_timer.start()
-        print("Red Done!")
-        
-        green_timer = threading.Timer(time, self.run_green())
-        green_timer.start()
-        print("Green Done!")
 
         if self.check_red_count > self.check_green_count:
             return 'red'
@@ -36,41 +29,7 @@ class detection:
         else:
             return '''We're fucked!'''
 
-    def run_red(self):
-        rawCapture = PiRGBArray(self.camera, size=(704, 544))
-        # Runs Red
-        for frame in self.camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
-            image = frame.array
-
-            blurred_image = cv.GaussianBlur(image, (5,5), 0)
-            
-            new_image = self.detect_color(self.hsv_red_low, self.hsv_red_high, blurred_image)
-            
-            w_h = self.rectangle(new_image, image)
-
-            area = w_h[0]*w_h[1]
-
-            add = self.check_area(area)
-
-            self.check_red_count += add
-            
-            if self.show_image:
-                ## Shows Image-------------------------------------------------
-                cv.imshow("Result", np.hstack([image]))
-
-                ## Sets quit key and truncates for smoothing-------------------
-                key = cv.waitKey(1) & 0xFF
-
-                rawCapture.truncate(0)
-
-                if key == ord("q"):
-                    cv.destroyAllWindows()
-                    break
-            else:
-                rawCapture.truncate(0)
-            print(self.check_red_count)
-            
-    def run_green(self):
+    def detect(self):
         rawCapture = PiRGBArray(self.camera, size=(704, 544))
         # Runs Green
         for frame in self.camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
@@ -78,15 +37,20 @@ class detection:
 
             blurred_image = cv.GaussianBlur(image, (5,5), 0)
             
-            new_image = self.detect_color(self.hsv_green_low, self.hsv_green_high, blurred_image)
+            red_image = self.detect_color(self.hsv_green_low, self.hsv_green_high, blurred_image)
+            green_image = self.detect_color(self.hsv_red_low, self.hsv_red_high, blurred_image)
 
-            w_h = self.rectangle(self, new_image, image)
+            red_w_h = self.rectangle(self, red_image, image)
+            green_w_h = self.rectangle(self, green_image, image)
 
-            area = w_h[0]*w_h[1]
+            red_area = red_w_h[0]*red_w_h[1]
+            green_area = green_w_h[0]*green_w_h[1]
 
-            add = self.check_area(area)
+            add_red = self.check_green_area(red_area)
+            add_green = self.check_green_area(green_area)
 
-            self.check_green_count += add
+            self.check_red_count += add_red
+            self.check_green_count += add_green
             
             if self.show_image:
                 ## Shows Image-------------------------------------------------
@@ -102,8 +66,7 @@ class detection:
                     break
             else:
                 rawCapture.truncate(0)
-            print(self.check_green_count)
-        
+
     def detect_color(self, low, high, image):
         hsv_frame = cv.cvtColor(image, cv.COLOR_BGR2HSV)
         blkwht_frame = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
@@ -147,6 +110,74 @@ class detection:
             return [w,h]
         else:
             return [0,0]
+
+    # def run_red(self):
+    #     rawCapture = PiRGBArray(self.camera, size=(704, 544))
+    #     # Runs Red
+    #     for frame in self.camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
+    #         image = frame.array
+
+    #         blurred_image = cv.GaussianBlur(image, (5,5), 0)
+            
+    #         new_image = self.detect_color(self.hsv_red_low, self.hsv_red_high, blurred_image)
+            
+    #         w_h = self.rectangle(new_image, image)
+
+    #         area = w_h[0]*w_h[1]
+
+    #         add = self.check_area(area)
+
+    #         self.check_red_count += add
+            
+    #         if self.show_image:
+    #             ## Shows Image-------------------------------------------------
+    #             cv.imshow("Result", np.hstack([image]))
+
+    #             ## Sets quit key and truncates for smoothing-------------------
+    #             key = cv.waitKey(1) & 0xFF
+
+    #             rawCapture.truncate(0)
+
+    #             if key == ord("q"):
+    #                 cv.destroyAllWindows()
+    #                 break
+    #         else:
+    #             rawCapture.truncate(0)
+    #         print(self.check_red_count)
+            
+    # def run_green(self):
+    #     rawCapture = PiRGBArray(self.camera, size=(704, 544))
+    #     # Runs Green
+    #     for frame in self.camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
+    #         image = frame.array
+
+    #         blurred_image = cv.GaussianBlur(image, (5,5), 0)
+            
+    #         new_image = self.detect_color(self.hsv_green_low, self.hsv_green_high, blurred_image)
+
+    #         w_h = self.rectangle(self, new_image, image)
+
+    #         area = w_h[0]*w_h[1]
+
+    #         add = self.check_area(area)
+
+    #         self.check_green_count += add
+            
+    #         if self.show_image:
+    #             ## Shows Image-------------------------------------------------
+    #             cv.imshow("Result", np.hstack([image]))
+
+    #             ## Sets quit key and truncates for smoothing-------------------
+    #             key = cv.waitKey(1) & 0xFF
+
+    #             rawCapture.truncate(0)
+
+    #             if key == ord("q"):
+    #                 cv.destroyAllWindows()
+    #                 break
+    #         else:
+    #             rawCapture.truncate(0)
+    #         print(self.check_green_count)
 
 new_detection = detection()
 if __name__ == '__main__':
