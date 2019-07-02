@@ -32,8 +32,6 @@ class detection:
 
     def detect(self):
         rawCapture = PiRGBArray(self.camera, size=(704, 544))
-        start = time.time()
-        print(start)
         for frame in self.camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
             image = frame.array
 
@@ -112,6 +110,74 @@ class detection:
 
         else:
             return [0,0]
+
+    # def run_red(self):
+    #     rawCapture = PiRGBArray(self.camera, size=(704, 544))
+    #     # Runs Red
+    #     for frame in self.camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
+    #         image = frame.array
+
+    #         blurred_image = cv.GaussianBlur(image, (5,5), 0)
+            
+    #         new_image = self.detect_color(self.hsv_red_low, self.hsv_red_high, blurred_image)
+            
+    #         w_h = self.rectangle(new_image, image)
+
+    #         area = w_h[0]*w_h[1]
+
+    #         add = self.check_area(area)
+
+    #         self.check_red_count += add
+            
+    #         if self.show_image:
+    #             ## Shows Image-------------------------------------------------
+    #             cv.imshow("Result", np.hstack([image]))
+
+    #             ## Sets quit key and truncates for smoothing-------------------
+    #             key = cv.waitKey(1) & 0xFF
+
+    #             rawCapture.truncate(0)
+
+    #             if key == ord("q"):
+    #                 cv.destroyAllWindows()
+    #                 break
+    #         else:
+    #             rawCapture.truncate(0)
+    #         print(self.check_red_count)
+            
+    # def run_green(self):
+    #     rawCapture = PiRGBArray(self.camera, size=(704, 544))
+    #     # Runs Green
+    #     for frame in self.camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
+    #         image = frame.array
+
+    #         blurred_image = cv.GaussianBlur(image, (5,5), 0)
+            
+    #         new_image = self.detect_color(self.hsv_green_low, self.hsv_green_high, blurred_image)
+
+    #         w_h = self.rectangle(self, new_image, image)
+
+    #         area = w_h[0]*w_h[1]
+
+    #         add = self.check_area(area)
+
+    #         self.check_green_count += add
+            
+    #         if self.show_image:
+    #             ## Shows Image-------------------------------------------------
+    #             cv.imshow("Result", np.hstack([image]))
+
+    #             ## Sets quit key and truncates for smoothing-------------------
+    #             key = cv.waitKey(1) & 0xFF
+
+    #             rawCapture.truncate(0)
+
+    #             if key == ord("q"):
+    #                 cv.destroyAllWindows()
+    #                 break
+    #         else:
+    #             rawCapture.truncate(0)
+    #         print(self.check_green_count)
 
 new_detection = detection()
 if __name__ == '__main__':
