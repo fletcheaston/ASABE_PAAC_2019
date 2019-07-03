@@ -8,8 +8,8 @@ from threading import Thread
 
 class detection:
     def __init__(self):
-        self.check_red_count = 0
-        self.check_green_count = 0
+        self.green_count = 0
+        self.red_count = 0
         self.show_image = None
         self.camera = PiCamera()
         self.camera.framerate = 32
@@ -20,41 +20,52 @@ class detection:
         self.hsv_green_low = [41, 54, 20]
         self.hsv_green_high = [80, 255, 255]
             
-    def __call__(self, show_image = None):
+    def __call__(self, show_image = None, run_time=5):
         self.show_image = show_image
-        self.detect()
+        self.detect(run_time)
 
-        if self.check_red_count > self.check_green_count:
-            return 'red'
-        elif self.check_red_count < self.check_green_count:
-            return 'green'
+        if self.red_count > self.green_count:
+            print('''It's Red!''')
+            self.green_count = 0
+            self.red_count = 0
+            return "n"
+        elif self.red_count < self.green_count:
+            print('''It's Green!''')
+            self.green_count = 0
+            self.red_count = 0
+            return "n"
         else:
-            return '''We're fucked!'''
+            print('''We're fucked!''')
+            self.green_count = 0
+            self.red_count = 0
+            return "n"
 
-    def detect(self):
+    def detect(self, run_time):
         rawCapture = PiRGBArray(self.camera, size=(704, 544))
-
+        start_time = time.time()
         for frame in self.camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
+            end_time = time.time()
+            if end_time - start_time >= run_time:
+                break
 
             image = frame.array
 
             blurred_image = cv.GaussianBlur(image, (5,5), 0)
             
-            green_image = self.detect_color(self.hsv_green_low, self.hsv_green_high, blurred_image)
             red_image = self.detect_color(self.hsv_red_low, self.hsv_red_high, blurred_image)
-            
-            
-            green_w_h = self.rectangle(green_image, image)
-            red_w_h = self.rectangle(red_image, image)
+            green_image = self.detect_color(self.hsv_green_low, self.hsv_green_high, blurred_image)
 
-            green_area = green_w_h[0] * green_w_h[1]
+            red_w_h = self.rectangle(red_image, image)
+            green_w_h = self.rectangle(green_image, image)
+
             red_area = red_w_h[0]*red_w_h[1]
-            
-            green_add = self.check_area(green_area)
-            red_add = self.check_area(red_area)
-            
-            self.check_green_count += green_add
-            self.check_red_count += red_add 
+            green_area = green_w_h[0]*green_w_h[1]
+
+            add_red = self.check_area(red_area)
+            add_green = self.check_area(green_area)
+
+            self.red_count += add_red
+            self.green_count += add_green
             
             if self.show_image:
                 ## Shows Image-------------------------------------------------
@@ -71,80 +82,8 @@ class detection:
   
             else:
                 rawCapture.truncate(0)
-            print(self.check_green_count)
+            print([self.green_count, self.red_count])
 
-##    def run_red(self):
-##        rawCapture = PiRGBArray(self.camera, size=(704, 544))
-##        # Runs Red
-##        for frame in self.camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
-##            end_time = time.time()
-##            print(end_time)
-##            if end_time - start_time >= 5.0:
-##                cv.destroyAllWindows()
-##                break
-##            
-##            image = frame.array
-##
-##            blurred_image = cv.GaussianBlur(image, (5,5), 0)
-##            
-##            new_image = self.detect_color(self.hsv_red_low, self.hsv_red_high, blurred_image)
-##            
-##            w_h = self.rectangle(new_image, image)
-##
-##            area = w_h[0]*w_h[1]
-##
-##            add = self.check_area(area)
-##
-##            self.check_red_count += add
-##            
-##            if self.show_image:
-##                ## Shows Image-------------------------------------------------
-##                cv.imshow("Result", np.hstack([image]))
-##
-##                ## Sets quit key and truncates for smoothing-------------------
-##                key = cv.waitKey(1) & 0xFF
-##
-##                rawCapture.truncate(0)
-##                
-##            else:
-##                rawCapture.truncate(0)
-##            
-##    def run_green(self):
-##        rawCapture = PiRGBArray(self.camera, size=(704, 544))
-##        # Runs Green
-##        start_time = time()
-##        for frame in self.camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
-##            
-##            if time() - start_time >= 5.0:
-##                cv.destroyAllWindows()
-##                break
-##            
-##            image = frame.array
-##
-##            blurred_image = cv.GaussianBlur(image, (5,5), 0)
-##            
-##            new_image = self.detect_color(self.hsv_green_low, self.hsv_green_high, blurred_image)
-##
-##            w_h = self.rectangle(self, new_image, image)
-##
-##            area = w_h[0]*w_h[1]
-##
-##            add = self.check_area(area)
-##
-##            self.check_green_count += add
-##            
-##            if self.show_image:
-##                ## Shows Image-------------------------------------------------
-##                cv.imshow("Result", np.hstack([image]))
-##
-##                ## Sets quit key and truncates for smoothing-------------------
-##                key = cv.waitKey(1) & 0xFF
-##
-##                rawCapture.truncate(0)
-##            else:
-##                rawCapture.truncate(0)
-##            print(self.check_green_count)
-        
     def detect_color(self, low, high, image):
         hsv_frame = cv.cvtColor(image, cv.COLOR_BGR2HSV)
         blkwht_frame = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
@@ -178,34 +117,31 @@ class detection:
             # draw the book contour (in green)
             cv.rectangle(image,(x,y),(x+w,y+h),(0,255,0),2)
             return [w,h]
-            
+
         elif len(contours) != 0:
             #find the biggest area
             c = max(contours, key = cv.contourArea)
 
             x,y,w,h = cv.boundingRect(c)
-            
             return [w,h]
+
         else:
             return [0,0]
 
 new_detection = detection()
 if __name__ == '__main__':
-    while True:
+    status = "y"
+    while status == "y":
         show_image = str(input('Show image or run competition(s/r): '))
-        time = str(input('Input Time to run each detection(A number): '))
-        try:
-##            time = float(time)
-            if show_image == 's' or show_image == 'r':
-                if show_image == 's':
-                    print("good! a")
-                    new_detection(True)
-                elif show_image == 'r':
-                    print("good! b")
-                    new_detection(False)
+        run_time = int(input('Input Time to run each detection(A number): '))
+        if show_image == 's' or show_image == 'r':
+            if show_image == 's':
+                status = new_detection(True)
+            elif show_image == 'r':
+                status = new_detection(False)
             else:
                 print('Invalid image_choice')
-        except Exception as error:
-            print(error)
-            print('Invalid Time choice')
+            status = str(input("Do another Check?[y/n]"))
+        else:
+            print("Invalid Show Image Choice")
 

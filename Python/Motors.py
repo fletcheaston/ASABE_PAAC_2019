@@ -16,7 +16,7 @@ def longitudinalConstant():
 
 # The side-to-side-constant for moving the robot.
 def lateralConstant():
-    return(1);
+    return(22.8258388496);
 
 
 # Passes the speed of 0 to all motors.
@@ -27,7 +27,7 @@ def stopMotors(motorSerial):
 # Moves the robot in one of four predefined ways. Direction is local to the robot.
 def setDirectionSpeed(motorSerial, direction, speed):
     if(direction == "RIGHT"):
-        setMotorSpeed(motorSerial, -1 * speed, speed, -1 * speed, speed);
+        setMotorSpeed(motorSerial, speed,  -1 * speed, -1 * speed, speed);
 
     elif(direction == "FORWARD"):
         setMotorSpeed(motorSerial, -1 * speed, -1 * speed, speed, speed);
@@ -36,7 +36,7 @@ def setDirectionSpeed(motorSerial, direction, speed):
         setMotorSpeed(motorSerial, speed, speed, -1 * speed, -1 * speed);
 
     elif(direction == "LEFT"):
-        setMotorSpeed(motorSerial, speed, -1 * speed, speed, -1 * speed);
+        setMotorSpeed(motorSerial,  -1 * speed, speed, speed, -1 * speed);
 
     else:
         print("Invalid direction: {!r}".format(direction));
@@ -47,7 +47,7 @@ def setDirectionSpeed(motorSerial, direction, speed):
 def setDirectionPosition(motorSerial, direction, distance, speed):
     if(direction == "RIGHT"):
         adjustedDistance = int(lateralConstant() * distance);
-        setMotorPositionDelta(motorSerial, -1 * adjustedDistance, adjustedDistance, -1 * adjustedDistance, adjustedDistance, speed);
+        setMotorPositionDelta(motorSerial, adjustedDistance, -1 * adjustedDistance, -1 * adjustedDistance, adjustedDistance, speed);
 
     elif(direction == "FORWARD"):
         adjustedDistance = int(longitudinalConstant() * distance);
@@ -59,12 +59,33 @@ def setDirectionPosition(motorSerial, direction, distance, speed):
 
     elif(direction == "LEFT"):
         adjustedDistance = int(lateralConstant() * distance);
-        setMotorPositionDelta(motorSerial, adjustedDistance, -1 * adjustedDistance, adjustedDistance, -1 * adjustedDistance, speed);
+        setMotorPositionDelta(motorSerial, -1 * adjustedDistance, adjustedDistance, adjustedDistance, -1 * adjustedDistance, speed);
 
     else:
         print("Invalid direction: {!r}".format(direction));
         setMotorSpeed(motorSerial, 0, 0, 0, 0);
 
+# Moves the robot in one of four predefined ways. Direction is local to the robot. Distance is in centimeters.
+def setDirectionPositionAndSpeed(motorSerial, direction, distance, frSpeed, brSpeed, blSpeed, flSpeed):
+    if(direction == "RIGHT"):
+        adjustedDistance = int(lateralConstant() * distance);
+        setMotorPositionDeltaAndSpeed(motorSerial, adjustedDistance, -1 * adjustedDistance, -1 * adjustedDistance, adjustedDistance, frSpeed, brSpeed, blSpeed, flSpeed);
+
+    elif(direction == "FORWARD"):
+        adjustedDistance = int(longitudinalConstant() * distance);
+        setMotorPositionDeltaAndSpeed(motorSerial, -1 * adjustedDistance, -1 * adjustedDistance, adjustedDistance, adjustedDistance, frSpeed, brSpeed, blSpeed, flSpeed);
+
+    elif(direction == "BACKWARD"):
+        adjustedDistance = int(longitudinalConstant() * distance);
+        setMotorPositionDeltaAndSpeed(motorSerial, adjustedDistance, adjustedDistance, -1 * adjustedDistance, -1 * adjustedDistance, frSpeed, brSpeed, blSpeed, flSpeed);
+
+    elif(direction == "LEFT"):
+        adjustedDistance = int(lateralConstant() * distance);
+        setMotorPositionDeltaAndSpeed(motorSerial, -1 * adjustedDistance, adjustedDistance, adjustedDistance, -1 * adjustedDistance, frSpeed, brSpeed, blSpeed, flSpeed);
+
+    else:
+        print("Invalid direction: {!r}".format(direction));
+        setMotorSpeed(motorSerial, 0, 0, 0, 0);
 
 # Sets all motors to their respective passed-in speeds.
 def setMotorSpeed(motorSerial, frontRightSpeed, backRightSpeed, backLeftSpeed, frontLeftSpeed):
@@ -119,6 +140,16 @@ def setMotorPositionDelta(motorSerial, frPos, brPos, blPos, flPos, allSpeed):
     setMotorPosition(motorSerial, newfrPos, allSpeed, newbrPos, allSpeed, newblPos, allSpeed, newflPos, allSpeed);
 
 
+def setMotorPositionDeltaAndSpeed(motorSerial, frPos, brPos, blPos, flPos, frSpeed, brSpeed, blSpeed, flSpeed):
+    currentPos = getMotorPosition(motorSerial);
+    newfrPos = frPos + currentPos[0];
+    newbrPos = brPos + currentPos[1];
+    newblPos = blPos + currentPos[2];
+    newflPos = flPos + currentPos[3];
+
+    setMotorPosition(motorSerial, newfrPos, frSpeed, newbrPos, brSpeed, newblPos, blSpeed, newflPos, flSpeed);
+
+
 # Rotates the robot by a specified angle and speed.
 def rotate(motorSerial, angle, speed):
     realAngle = int(angleConstant() * angle);
@@ -129,3 +160,4 @@ def rotate(motorSerial, angle, speed):
 def writeSerialString(motorSerial, string):
     bytes = string.encode();
     motorSerial.write(bytes);
+
