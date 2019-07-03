@@ -6,7 +6,7 @@ import time;
 
 # The angle-constant for rotating the robot.
 def angleConstant():
-    return(1);
+    return(8.3454071284);
 
 
 # The forward/backward-constant for moving the robot.
@@ -89,7 +89,7 @@ def setDirectionPositionAndSpeed(motorSerial, direction, distance, frSpeed, brSp
 
 # Sets all motors to their respective passed-in speeds.
 def setMotorSpeed(motorSerial, frontRightSpeed, backRightSpeed, backLeftSpeed, frontLeftSpeed):
-    string = "S " + str(frontRightSpeed) + " " + str(backRightSpeed) + " " + str(backLeftSpeed) + " " + str(frontLeftSpeed) + " ";
+    string = "S " + str(int(frontRightSpeed)) + " " + str(int(backRightSpeed)) + " " + str(int(backLeftSpeed)) + " " + str(int(frontLeftSpeed)) + " ";
     writeSerialString(motorSerial, string);
 
 

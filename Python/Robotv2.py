@@ -52,7 +52,7 @@ class Robot:
         self.updateNavigationData();
         self.updateSpeedsForRotation();
         self.checkPhase();
-        self.move();
+#        self.move();
 
 
     def updateNavigationData(self):
@@ -107,17 +107,15 @@ class Robot:
 
 
     def moveToLocation(self, location, exit, tolerance=2):
-        if(abs(self.position.y - location.y) > tolerance):
-            self.moveToY(location.y, exit, tolerance);
-        elif(abs(self.position.x - location.x) > tolerance):
-            self.moveToX(location.x, exit, tolerance);
+#        if(abs(self.position.y - location.y) > tolerance):
+        self.moveToX(location.x, exit, tolerance);
 
 
     def moveToY(self, yPosition, exit, tolerance=2):
         if(abs(self.position.y - yPosition) > tolerance):
-            if(self.position.y - yPosition > 0):
+            if(self.position.y - yPosition < 0):
                 Motors.setDirectionPosition(self.motorSerial, "RIGHT", abs(self.position.y - yPosition), self.speed);
-            elif(self.position.y - yPosition < 0):
+            elif(self.position.y - yPosition > 0):
                 Motors.setDirectionPosition(self.motorSerial, "LEFT", abs(self.position.y - yPosition), self.speed);
         else:
             Motors.stopMotors(self.motorSerial);
@@ -129,8 +127,10 @@ class Robot:
         if(abs(self.position.x - xPosition) > tolerance):
             if(self.position.x - xPosition > 0):
                 Motors.setMotorSpeed(self.motorSerial, -1 * self.frSpeed, -1 * self.brSpeed, -1 * self.blSpeed, -1 * self.flSpeed);
+                print("back");
             elif(self.position.y - xPosition < 0):
                 Motors.setMotorSpeed(self.motorSerial, self.frSpeed, self.brSpeed, self.blSpeed, self.flSpeed);
+                print("forward");
 
         else:
             Motors.stopMotors(self.motorSerial);
@@ -141,11 +141,17 @@ class Robot:
     def stop(self):
         Motors.stopMotors(self.motorSerial);
 
+    def printSpeeds(self):
+        print("FR: {!r}".format(self.frSpeed));
+        print("FL: {!r}".format(self.flSpeed));
+        print("BR: {!r}".format(self.brSpeed));
+        print("BL: {!r}".format(self.blSpeed));
+
 
 if __name__ == '__main__':
     robot = Robot();
-    try:
-        while(True):
-            robot.update();
-    except:
-        robot.stop();
+
+    while(True):
+        robot.update();
+        print(robot.phase);
+        robot.printSpeeds();

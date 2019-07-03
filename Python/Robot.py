@@ -27,12 +27,14 @@ class Robot:
         self.neutralY = 55;
         self.nextPosition = Position(0, 0);
         self.phase = "Wait";
+        self.xDirection = 1;
 
         self.speed = 50;
         self.frSpeed = self.speed;
         self.brSpeed = self.speed;
         self.blSpeed = self.speed;
         self.flSpeed = self.speed;
+        self.rotation = 0;
 
         self.setupMotorSerial();
         self.readSideAndPosition();
@@ -85,11 +87,11 @@ class Robot:
     def moveToX(self, xPosition, exit, tolerance=3):
         if(abs(self.position.x - xPosition) > tolerance):
             if(self.position.x - xPosition > 0):
-                Motors.setDirectionPosition(self.motorSerial, "BACKWARD", abs(self.position.x - xPosition), self.speed);
- # Motors.setDirectionPositionAndSpeed(self.motorSerial, "BACKWARD", abs(self.position.x - xPosition), self.frSpeed, self.brSpeed, self.blSpeed, self.flSpeed);
+                self.xDirection = -1;
+                Motors.setMotorSpeed(self.motorSerial, self.frSpeed, self.brSpeed, -1 * self.blSpeed, -1 * self.flSpeed);
             elif(self.position.y - xPosition < 0):
-                Motors.setDirectionPosition(self.motorSerial, "FORWARD", abs(self.position.x - xPosition), self.speed);
-#                Motors.setDirectionPositionAndSpeed(self.motorSerial, "FORWARD", abs(self.position.x - xPosition), self.frSpeed, self.brSpeed, self.blSpeed, self.flSpeed);
+                self.yDirection = 1;
+                Motors.setMotorSpeed(self.motorSerial, -1 * self.frSpeed, -1 * self.brSpeed, self.blSpeed, self.flSpeed);
         else:
             Motors.stopMotors(self.motorSerial);
             time.sleep(0.1);
@@ -124,24 +126,14 @@ class Robot:
 
 
     def updateRotation(self):
-        if(self.rotation > 0.1):
-            self.frSpeed = bounded(self.frSpeed + 0.25, self.speed, self.speed * 1.1);
-            self.brSpeed = bounded(self.brSpeed + 0.25, self.speed, self.speed * 1.1);
-            self.blSpeed = bounded(self.blSpeed - 0.25, self.speed * 0.9, self.speed);
-            self.flSpeed = bounded(self.flSpeed - 0.25, self.speed * 0.9, self.speed);
-            print("Turning left...");
-        elif(self.rotation < -0.1):
-            self.frSpeed = bounded(self.frSpeed - 0.25, self.speed * 0.9, self.speed);
-            self.brSpeed = bounded(self.brSpeed - 0.25, self.speed * 0.9, self.speed);
-            self.blSpeed = bounded(self.blSpeed + 0.25, self.speed, self.speed * 1.1);
-            self.flSpeed = bounded(self.frSpeed + 0.25, self.speed, self.speed * 1.1);
-            print("Turning right...");
-        else:
-            self.frSpeed = self.speed;
-            self.brSpeed = self.speed;
-            self.blSpeed = self.speed;
-            self.flSpeed = self.speed;
+        max_speed_adjustment = 20;
+        max_angle = 90;
+        proportional_adjustment = self.rotation / max_angle *  max_speed_adjustment * self.xDirection;
 
+        self.frSpeed = self.speed + proportional_adjustment;
+        self.brSpeed = self.speed + proportional_adjustment;
+        self.flSpeed = self.speed - proportional_adjustment;
+        self.blSpeed = self.speed - proportional_adjustment;
 
 
     def stop(self):

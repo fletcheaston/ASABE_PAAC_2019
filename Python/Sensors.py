@@ -179,7 +179,7 @@ class Sensors:
         f.flush();
         os.fsync(f.fileno());
         f.close();
-#        print(self.position.toString());
+        print(self.position.toString());
 #        print("Left rotations: " + str(self.left_rotations));
 #        print("Right rotations: " + str(self.right_rotations));
 #        print("Left weight: " + str(self.left_weight));
