@@ -15,8 +15,11 @@ class Robot:
         self.dataFile = "SensorData.db";
         self.atomicDataFile = "AtomicSensorData.db";
 
-        self.taskPositions = [Position(55, 12), Position(75, 12), Position(85, 12), Position(102, 12), Position(120, 12), Position(140, 12), Position(160, 12), Position(175, 12), Position(195, 12), Position(210, 12)];
-        self.taskIndex = 0;
+        self.plantPositions = [Position(55, 12), Position(75, 12), Position(85, 12), Position(102, 12), Position(120, 12), Position(140, 12), Position(160, 12), Position(175, 12), Position(195, 12), Position(210, 12)];
+        self.plantIndex = 0;
+
+        self.zonePositions = [Position(10, 90), Position(20, 90), Position(30, 90), Position(40, 90), Position(50, 90), Position(60, 90), Position(70, 90), Position(80, 90), Position(90, 90), Position(100, 90)];
+        self.zoneIndex = 0;
 
         self.phase = "MoveToPlant";
 
@@ -95,7 +98,7 @@ class Robot:
             pass;
 
         if(self.phase == "MoveToPlant"):
-            plant = self.taskPositions[self.taskIndex];
+            plant = self.plantPositions[self.plantIndex];
             if(abs(self.position.y - plant.y) > 2):
                 self.moveToY(plant.y, "MoveToPlant", tolerance=2);
             elif(abs(self.position.x - plant.x) > 2):
@@ -106,11 +109,28 @@ class Robot:
         if(self.phase == "PickupPlant"):
             Motors.stopMotors(self.motorSerial);
             Motors.writeSerialString(self.motorSerial, "U");
-            time.sleep(3);
+            time.sleep(1);
+            self.plantIndex = self.plantIndex + 1;
+            if(self.plantIndex > len(self.plantPositions)):
+                self.phase = "Wait";
+            else:
+                self.phase = "MoveToZone";
+
+        if(self.phase == "MoveToZone"):
+            zone = self.zonePositions[self.zoneIndex];
+            if(abs(self.position.y - zone.y) > 2):
+                self.moveToY(zone.y, "MoveToZone", tolerance=2);
+            elif(abs(self.position.x - zone.x) > 2):
+                self.moveToX(zone.x, "DropoffPlant", tolerance=2);
+            else:
+                self.phase = "DropoffPlant";
+
+        if(self.phase == "DropoffPlant"):
+            Motors.stopMotors(self.motorSerial);
             Motors.writeSerialString(self.motorSerial, "D");
-            time.sleep(3);
-            self.taskIndex = self.taskIndex + 1;
-            if(self.taskIndex > len(self.taskPositions)):
+            time.sleep(1);
+            self.zoneIndex = self.zoneIndex + 1;
+            if(self.zoneIndex > len(self.zonePositions)):
                 self.phase = "Wait";
             else:
                 self.phase = "MoveToPlant";
@@ -151,5 +171,5 @@ if __name__ == '__main__':
         robot.printSpeeds();
         print(robot.position.toString() + " : " + str(robot.rotation));
         print(robot.phase);
-        print(robot.taskPositions[robot.taskIndex].toString());
+        print(robot.plantPositions[robot.plantIndex].toString());
         time.sleep(0.1);
