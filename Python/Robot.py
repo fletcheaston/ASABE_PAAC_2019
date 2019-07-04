@@ -4,7 +4,6 @@ import os;
 import time;
 import serial;
 from Position import *;
-from Dimension import *;
 import Motors;
 
 
@@ -165,4 +164,3 @@ if __name__ == '__main__':
             if(robot.taskCount < len(robot.taskPositions)):
                 robot.moveToPosition(robot.taskPositions[robot.taskCount]);
                 robot.taskCount = robot.taskCount + 1;
-
