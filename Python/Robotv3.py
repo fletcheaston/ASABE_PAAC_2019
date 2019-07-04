@@ -27,7 +27,7 @@ class Robot:
 
         self.phase = "Searching";
 
-        self.speed = 50;
+        self.speed = 25;
         self.frSpeed = self.speed;
         self.brSpeed = self.speed;
         self.blSpeed = self.speed;
@@ -80,12 +80,10 @@ class Robot:
         if(abs(self.position.x - xPosition) > tolerance):
             if(self.position.x - xPosition > 0):
                 self.xDirection = -1;
-                Motors.setMotorSpeed(self.motorSerial, -1 * self.frSpeed, -1 * self.brSpeed, -1 * self.blSpeed, -1 * self.flSpeed);
-                print("back");
+                Motors.setMotorSpeed(self.motorSerial, self.frSpeed, self.brSpeed, -1 * self.blSpeed, -1 * self.flSpeed);
             elif(self.position.y - xPosition < 0):
                 self.xDirection = 1;
-                Motors.setMotorSpeed(self.motorSerial, self.frSpeed, self.brSpeed, self.blSpeed, self.flSpeed);
-                print("forward");
+                Motors.setMotorSpeed(self.motorSerial, -1 * self.frSpeed, -1 * self.brSpeed, self.blSpeed, self.flSpeed);
 
         else:
             Motors.stopMotors(self.motorSerial);
@@ -100,14 +98,21 @@ class Robot:
 
 
     def updateMovement(self):
-        if(abs(self.position.x - self.home.x) > 3):
-            self.moveToX(home.x, "Searching", tolerance=3);
-        elif(abs(self.position.y - self.home.y) > 3):
-            self.moveToY(home.y, "Seraching", tolerance=3);
+        if(abs(self.position.x - self.home.x) > 5):
+            self.moveToX(self.home.x, "Searching", tolerance=5);
+            self.phase = "X_Positioning";
+        elif(abs(self.rotation) > 5):
+            Motors.rotate(self.motorSerial, -1 * self.rotation / 2, self.speed);
+            self.phase = "Rotating";
+        elif(abs(self.position.y - self.home.y) > 5):
+            self.moveToY(self.home.y, "Seraching", tolerance=5);
+            self.phase = "Y_Positioning";
+        else:
+            self.phase = "Home";
 
 
     def updateRotation(self):
-        max_speed_adjustment = 20;
+        max_speed_adjustment = self.speed;
         max_angle = 90;
         proportional_adjustment = self.rotation / max_angle *  max_speed_adjustment * self.xDirection;
 
@@ -121,20 +126,20 @@ class Robot:
         Motors.stopMotors(self.motorSerial);
 
 
+    def printSpeeds(self):
+        print("FR: {!r}".format(self.frSpeed));
+        print("FL: {!r}".format(self.flSpeed));
+        print("BR: {!r}".format(self.brSpeed));
+        print("BL: {!r}".format(self.blSpeed));
+
+
 if __name__ == '__main__':
     robot = Robot();
 
     while(True):
-        time.sleep(0.1);
         robot.readSideAndPosition();
         robot.updateMovement();
         robot.updateRotation();
-
+#        robot.printSpeeds();
         print(robot.position.toString() + " : " + str(robot.rotation));
-        print("Next Position: " + robot.taskPositions[robot.taskCount - 1].toString());
         print(robot.phase);
-
-        if(robot.phase == "Wait"):
-            if(robot.taskCount < len(robot.taskPositions)):
-                robot.moveToPosition(robot.taskPositions[robot.taskCount]);
-                robot.taskCount = robot.taskCount + 1;
