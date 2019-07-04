@@ -24,11 +24,11 @@ class Robot:
         self.atomicDataFile = "AtomicSensorData.db";
 
         self.first = Position(30, 15);
-        self.second = Position(150, 15);
+        self.second = Position(225, 15);
 
         self.phase = "First";
 
-        self.speed = 25;
+        self.speed = 50;
         self.frSpeed = self.speed;
         self.brSpeed = self.speed;
         self.blSpeed = self.speed;
@@ -104,23 +104,32 @@ class Robot:
                 self.moveToY(self.first.y, "First", tolerance=2);
             elif(abs(self.position.x - self.first.x) > 5):
                 self.moveToX(self.first.x, "Second", tolerance=5);
+            else:
+                self.phase = "Second";
 
-        if(self.phase == "First"):
-            if(abs(self.position.y - self.first.y) > 2):
-                self.moveToY(self.first.y, "Second", tolerance=2);
-            elif(abs(self.position.x - self.first.x) > 5):
-                self.moveToX(self.first.x, "First", tolerance=5);
+        if(self.phase == "Second"):
+            if(abs(self.position.y - self.second.y) > 2):
+                self.moveToY(self.second.y, "Second", tolerance=2);
+            elif(abs(self.position.x - self.second.x) > 5):
+                self.moveToX(self.second.x, "First", tolerance=5);
+            else:
+                self.phase = "First";
+
+        if(abs(self.rotation) > 3):
+             Motors.rotate(self.motorSerial, -1 * self.rotation / 2, self.speed);
 
 
     def updateRotation(self):
         max_speed_adjustment = self.speed;
         max_angle = 90;
         proportional_adjustment = self.rotation / max_angle *  max_speed_adjustment * self.xDirection;
+        distance_adjustment = (self.position.y - 15) * self.xDirection;
 
-        self.frSpeed = self.speed + proportional_adjustment;
-        self.brSpeed = self.speed + proportional_adjustment;
-        self.flSpeed = self.speed - proportional_adjustment;
-        self.blSpeed = self.speed - proportional_adjustment;
+        self.frSpeed = self.speed + proportional_adjustment - distance_adjustment;
+        self.brSpeed = self.speed + proportional_adjustment - distance_adjustment;
+        self.flSpeed = self.speed - proportional_adjustment + distance_adjustment;
+        self.blSpeed = self.speed - proportional_adjustment + distance_adjustment;
+
 
 
     def stop(self):
