@@ -3,29 +3,18 @@
 // Drives four DC motors with encoders (using the MegaPi slots)
 // Drives two servos (using the analog pins)
 
-#ifdef DEBUG
-  #define DEBUG_PRINT(x) Serial.println(x);
-#else
-  #define DEBUG_PRINT(x)
-#endif
-
 #include <Arduino.h>
 #include <MeMegaPi.h>
 #include <Wire.h>
-#include <Servo.h>
 
 MeEncoderOnBoard FrontRightMotor(SLOT3);
 MeEncoderOnBoard BackRightMotor(SLOT4);
 MeEncoderOnBoard BackLeftMotor(SLOT1);
 MeEncoderOnBoard FrontLeftMotor(SLOT2);
 
-#define gripperLeftPin A8
-#define gripperRightPin A7
+#define gripperPin A6
 
-Servo gripperLeft;
-Servo gripperRight;
-
-int gripperPos = 0;
+Servo gripper;
 
 void isr_process_encoder1()
 {
@@ -113,8 +102,8 @@ void setupMotors()
 
 void setupServos()
 {
-    gripperLeft.attach(gripperLeftPin);
-    gripperRight.attach(gripperRightPin);
+    gripper.attach(gripperPin);
+    gripper.write(180);
 }
 
 
@@ -125,6 +114,8 @@ void setup()
     Wire.begin();
     
     setupMotors();
+
+    setupServos();
 
     Serial.println("Finished setup.");
 }
@@ -158,11 +149,17 @@ void loop()
             break;
             
             case 'U':
-            // Move servos/grippers to the up position
+            {
+                // Move servos/grippers to the up position
+                gripper.write(0);
+            }
             break;
 
             case 'D':
-            // Move servos/grippers to the down position
+            {
+                // Move servos/grippers to the down position
+                gripper.write(180);
+            }
             break;
 
             case 'G':
@@ -263,4 +260,3 @@ void readAndRunMotorPosition()
     BackLeftMotor.moveTo(motor3Position, motor3Speed);
     FrontLeftMotor.moveTo(motor4Position, motor4Speed);
 }
-
