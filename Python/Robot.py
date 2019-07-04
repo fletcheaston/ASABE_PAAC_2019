@@ -39,7 +39,7 @@ class Robot:
         self.setupMotorSerial();
         self.readSideAndPosition();
 
-        self.taskPositions = [Position(10, 90), Position(40, 15), Position(20, 90), Position(50, 15), Position(30, 90), Position(60, 15), Position(40, 90), Position(70, 15), Position(50, 90)];
+        self.taskPositions = [Position(30, 15), Position(10, 90), Position(40, 15), Position(20, 90), Position(50, 15), Position(30, 90), Position(60, 15), Position(40, 90), Position(70, 15), Position(50, 90)];
         self.taskCount = 0;
 
     def setupMotorSerial(self):
@@ -81,27 +81,25 @@ class Robot:
         else:
             Motors.stopMotors(self.motorSerial);
             time.sleep(0.1);
-#            Motors.rotate(self.motorSerial, -1 * self.rotation, self.speed);
-#            time.sleep(0.25);
             self.phase = exit;
 
 
     def moveToX(self, xPosition, exit, tolerance=3):
         if(abs(self.position.x - xPosition) > tolerance):
             if(self.position.x - xPosition > 0):
-                self.xDirection = -1;
-                Motors.setDirectionPosition(self.motorSerial, "BACKWARD", abs(self.position.y - yPosition), self.speed);
-#                Motors.setMotorSpeed(self.motorSerial, self.frSpeed, self.brSpeed, -1 * self.blSpeed, -1 * self.flSpeed);
-            elif(self.position.y - xPosition < 0):
-                self.yDirection = 1;
-                Motors.setDirectionPosition(self.motorSerial, "FORWARD", abs(self.position.y - yPosition), self.speed);
-#                Motors.setMotorSpeed(self.motorSerial, -1 * self.frSpeed, -1 * self.brSpeed, self.blSpeed, self.flSpeed);
+                Motors.setDirectionPosition(self.motorSerial, "BACKWARD", abs(self.position.x - xPosition), self.speed);
+            elif(self.position.x - xPosition < 0):
+                Motors.setDirectionPosition(self.motorSerial, "FORWARD", abs(self.position.x - xPosition), self.speed);
         else:
             Motors.stopMotors(self.motorSerial);
             time.sleep(0.1);
-#            Motors.rotate(self.motorSerial, -1 * self.rotation, self.speed);
-#            time.sleep(0.25);
             self.phase = exit;
+
+
+    def reorient(self, exit):
+        Motors.rotate(self.motorSerial, -1 * self.rotation, self.speed);
+        time.sleep(0.1);
+        self.phase = exit;
 
 
     def updateMovement(self):
@@ -112,7 +110,7 @@ class Robot:
             self.moveToY(self.neutralY, "TraverseNeutral", tolerance=5);
 
         elif(self.phase == "TraverseNeutral"):
-            self.moveToX(self.nextPosition.x, "ExitNeutral", tolerance=2);
+            self.moveToX(self.nextPosition.x, "WallMash", tolerance=2);
 
         elif(self.phase == "WallMash"):
             if(self.nextPosition.y < self.position.y):
@@ -154,11 +152,17 @@ if __name__ == '__main__':
         robot.readSideAndPosition();
         robot.updateMovement();
         robot.updateRotation();
+
         print(robot.position.toString() + " : " + str(robot.rotation));
-#        print(str(robot.frSpeed) + " " + str(robot.brSpeed) + " " + str(robot.flSpeed) + " " + str(robot.blSpeed));
-        print("Next Position: " + robot.taskPositions[robot.taskCount].toString());
+        print("Next Position: " + robot.taskPositions[robot.taskCount - 1].toString());
         print(robot.phase);
+
+#        if(abs(robot.rotation) > 5):
+ #           Motors.rotate(robot.motorSerial, -1 * robot.rotation / 2, robot.speed);
+  #          time.sleep(0.25);
+
         if(robot.phase == "Wait"):
             if(robot.taskCount < len(robot.taskPositions)):
                 robot.moveToPosition(robot.taskPositions[robot.taskCount]);
                 robot.taskCount = robot.taskCount + 1;
+

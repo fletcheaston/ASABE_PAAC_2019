@@ -14,7 +14,7 @@ while(motorSerial.in_waiting > 0):
 
 time.sleep(1);
 
-rotate(motorSerial, 360, 100);
+rotate(motorSerial, -10, 100);
 
 while(True):
     motorSerial.write(b"M");
