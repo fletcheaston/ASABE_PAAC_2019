@@ -23,7 +23,7 @@ class Robot:
         self.dataFile = "SensorData.db";
         self.atomicDataFile = "AtomicSensorData.db";
 
-        self.home = Position(50, 50);
+        self.home = Position(0, 0);
 
         self.phase = "Searching";
 

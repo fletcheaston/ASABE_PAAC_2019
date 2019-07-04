@@ -15,7 +15,7 @@ class Robot:
         self.dataFile = "SensorData.db";
         self.atomicDataFile = "AtomicSensorData.db";
 
-        self.taskPositions = [Position(40, 15), Position(60, 15), Position(80, 15), Position(100, 15), Position(120, 15), Position(140, 15), Position(160, 15)];
+        self.taskPositions = [Position(55, 12), Position(75, 12), Position(85, 12), Position(102, 12), Position(120, 12), Position(140, 12), Position(160, 12), Position(175, 12), Position(195, 12), Position(210, 12)];
         self.taskIndex = 0;
 
         self.phase = "MoveToPlant";
@@ -95,11 +95,13 @@ class Robot:
             pass;
 
         if(self.phase == "MoveToPlant"):
-            plant = self.taskPositions(self.taskIndex);
+            plant = self.taskPositions[self.taskIndex];
             if(abs(self.position.y - plant.y) > 2):
                 self.moveToY(plant.y, "MoveToPlant", tolerance=2);
             elif(abs(self.position.x - plant.x) > 2):
-                self.moveToX(plant.x, "MoveToPlant", tolerance=2);
+                self.moveToX(plant.x, "PickupPlant", tolerance=2);
+            else:
+                self.phase = "PickupPlant";
 
         if(self.phase == "PickupPlant"):
             Motors.stopMotors(self.motorSerial);
@@ -111,12 +113,15 @@ class Robot:
             if(self.taskIndex > len(self.taskPositions)):
                 self.phase = "Wait";
             else:
-                self.phase == "MoveToPlant";
+                self.phase = "MoveToPlant";
+
+        if(abs(self.rotation) > 3):
+            Motors.rotate(self.motorSerial, -1 * self.rotation / 2, self.speed);
 
 
     def updateRotation(self):
         max_speed_adjustment = self.speed;
-        max_angle = 90;
+        max_angle = 30;
         proportional_adjustment = self.rotation / max_angle *  max_speed_adjustment * self.xDirection;
 
         self.frSpeed = self.speed + proportional_adjustment;
@@ -143,6 +148,8 @@ if __name__ == '__main__':
         robot.readSideAndPosition();
         robot.updateMovement();
         robot.updateRotation();
-#        robot.printSpeeds();
+        robot.printSpeeds();
         print(robot.position.toString() + " : " + str(robot.rotation));
         print(robot.phase);
+        print(robot.taskPositions[robot.taskIndex].toString());
+        time.sleep(0.1);
